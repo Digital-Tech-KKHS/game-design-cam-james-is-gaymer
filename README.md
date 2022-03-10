@@ -6,3 +6,10 @@ Template repo for final arcade projects Kerikeri High School DTC
 ## Installing dependencies
 
 `pip install -r requirements.txt`
+
+## Lint & style commands
+```bash
+black .
+isort .
+flake8
+```
