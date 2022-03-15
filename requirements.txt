@@ -1,0 +1,4 @@
+arcade~=2.6
+black~=22.1
+isort~=5.10
+flake8~=4.0
