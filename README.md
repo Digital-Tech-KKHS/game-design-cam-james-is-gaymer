@@ -13,3 +13,9 @@ black .
 isort .
 flake8
 ```
+
+```bash 
+python -m black --config pyproject.toml .
+python -m isort .
+python -m flake8 --config .flake8
+```
