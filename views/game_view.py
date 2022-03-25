@@ -1,5 +1,5 @@
 import random
-from tkinter import Widget
+
 
 import arcade
 
@@ -7,17 +7,19 @@ WIDTH = 1600
 HEIGHT = 800
 TITLE = "test"
 
-CHARACTER_SCAILING = 1
+CHARACTER_SCAILING = 2
 
 PLAYER_ACCELERATION = 0.05
 PLAYER_DEACCELERATION = 0.02
 PLAYER_CHANGE_ANGLE_SPEED = 3
 PLAYER_ANGLE_DECCELERATION = 0.03
 
+METEOR_MOVEMENT_CONSTANT = 7
 
-class TestGame(arcade.Window):
+
+class TestGame(arcade.View):
     def __init__(self):
-        super().__init__(WIDTH, HEIGHT, TITLE)
+        super().__init__()
 
         self.player_sprite = None
 
@@ -32,9 +34,11 @@ class TestGame(arcade.Window):
         self.moving = None
         self.moving_angle = None
 
-        arcade.set_background_color(arcade.color.BLACK)
+        self.physics_engine = None
 
         arcade.set_background_color(arcade.color.BLACK)
+
+        self.setup()
 
     def setup(self):
 
@@ -44,9 +48,7 @@ class TestGame(arcade.Window):
 
         self.player_bullet_list = arcade.SpriteList()
 
-        image_source = (
-            "//dataserver2/CCampbell$/dev/13 game project/assets/zombie_idle.png"
-        )
+        image_source = "assets/player_idle.png"
         self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCAILING)
         self.player_sprite.center_x = 500
         self.player_sprite.center_y = 400
@@ -78,25 +80,35 @@ class TestGame(arcade.Window):
                 center_x=random.randint(0, WIDTH),
                 center_y=random.randint(0, HEIGHT),
             )
-            rock.change_x = random.random() * 5 - 2.5
-            rock.change_y = random.random() * 5 - 2.5
+            rock.change_x = (
+                random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+            )
+            rock.change_y = (
+                random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+            )
             self.scene["rocks"].append(rock)
+
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.scene["player"], self.scene["rocks"]
+        )
 
     def on_draw(self):
         self.clear()
 
         self.scene.draw()
 
-    def update(self, delta_time):
-        self.player_sprite.update()
+    def on_update(self, delta_time):
+        self.scene.update()
 
-        if self.accelerating_right == True:
+        if self.accelerating_right:
             self.player_sprite.change_x += PLAYER_ACCELERATION
-        if self.accelerating_left == True:
+        if self.accelerating_left:
             self.player_sprite.change_x -= PLAYER_ACCELERATION
-        if self.accelerating_up == True:
+        if self.accelerating_up:
             self.player_sprite.change_y += PLAYER_ACCELERATION
-        if self.accelerating_down == True:
+        if self.accelerating_down:
             self.player_sprite.change_y -= PLAYER_ACCELERATION
         if not self.moving:
             if self.player_sprite.change_x > 0:
@@ -123,7 +135,8 @@ class TestGame(arcade.Window):
             if rock.center_y > HEIGHT:
                 rock.center_y = 0
 
-        self.scene.update()
+        # for rock in self.scene["rocks"]:
+        # touching = arcade.check_for_collision_with_list(rock, self.scene["rocks"])
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
@@ -162,13 +175,3 @@ class TestGame(arcade.Window):
             self.moving_angle = False
         if key == arcade.key.RIGHT:
             self.moving_angle = False
-
-
-def main():
-    window = TestGame()
-    window.setup()
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
