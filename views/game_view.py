@@ -1,6 +1,5 @@
 import random
 
-
 import arcade
 
 WIDTH = 1600
