@@ -35,6 +35,8 @@ class TestGame(arcade.View):
 
         self.physics_engine = None
 
+        self.camera = None
+
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -46,6 +48,8 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("rocks")
 
         self.player_bullet_list = arcade.SpriteList()
+
+        self.camera = arcade.Camera(WIDTH, HEIGHT)
 
         image_source = "assets/player_idle.png"
         self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCAILING)
@@ -96,10 +100,14 @@ class TestGame(arcade.View):
     def on_draw(self):
         self.clear()
 
+        self.camera.use()
+
         self.scene.draw()
 
     def on_update(self, delta_time):
         self.scene.update()
+
+        self.center_camera()
 
         if self.accelerating_right:
             self.player_sprite.change_x += PLAYER_ACCELERATION
@@ -174,3 +182,13 @@ class TestGame(arcade.View):
             self.moving_angle = False
         if key == arcade.key.RIGHT:
             self.moving_angle = False
+
+    def center_camera(self):
+        screen_center_x = self.player_sprite.center_x
+        screen_center_y = self.player_sprite.center_y
+
+        if screen_center_x < WIDTH/2:
+            screen_center_x = WIDTH/2
+        if screen_center_y < HEIGHT/2:
+            screen_center_y = HEIGHT/2
+
