@@ -184,11 +184,13 @@ class TestGame(arcade.View):
             self.moving_angle = False
 
     def center_camera(self):
-        screen_center_x = self.player_sprite.center_x
-        screen_center_y = self.player_sprite.center_y
+        screen_center_x = self.player_sprite.center_x - WIDTH / 2
+        screen_center_y = self.player_sprite.center_y - HEIGHT / 2
 
-        if screen_center_x < WIDTH/2:
-            screen_center_x = WIDTH/2
-        if screen_center_y < HEIGHT/2:
-            screen_center_y = HEIGHT/2
+        # if screen_center_x < 0:
+        # screen_center_x = 0
+        # if screen_center_y < 0:
+        # screen_center_y = 0
 
+        player_centered = screen_center_x, screen_center_y
+        self.camera.move_to(player_centered)
