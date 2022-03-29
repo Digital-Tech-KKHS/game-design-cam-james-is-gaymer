@@ -1,30 +1,32 @@
 ### Working title
 
-# The Younger Scrolls V
+# Unkown
 
 ## Elevator pitch
 
-We're developing an open-world RPG game set in a medieval fantasy world inspired by European folklore. Its gameplay is strongly story-driven and based on the best-selling book "Earl of the Rings". It's "The Witcher" meets "Dark Souls" meets "Game of Thrones".
+We're developing an open-world Survival game set in a futuristic space environment. Its gameplay is strongly survival-driven and based on a combination of terraria and 7 days to die".
+
+
 
 # Concept Overview
 
-### Genre: Open-world RPG / Action
+### Genre: Open-world Survival/ Action
 
 ### Target audience:
 
 > Age: 15-30
 > 
-> Gender: Male/Female
+> Gender: Male
 > 
 > ...
 
 # Theme and setting
 
-![The dark tower](https://cdn.segmentnext.com/wp-content/uploads/2016/08/ttRLShz.jpg)
 
-The Younger Scrolls V is a role-playing game set in a historical fantasy version of medieval Europe. The player takes on the role of the Chosen One and gets to explore an open world of 450 square kilometers. While the geographic setting of the game is historically accurate, the game features many supernatural elements.
+... is a survival game set in the future in the main asteroid belt. The player takes on the role of a surviving space engineer from the desruction of a colony ship and gets to explore an open world. 
 
-Learn more about the , , and  of the game.
+
+Learn more about the , , and  of the game.???
 
 ...
 
@@ -32,15 +34,17 @@ Learn more about the , , and  of the game.
 
 ## Our team
 
-Dev: @Sonia, @Paras, @Ruben
+Dev: @LordCam2005 , @jsmall-lab
 
-Design: @Matt, @Antonio
+Design: @LordCam2005, @jsmall-lab
 
-Art: @Erica
+Art: @LordCam2005
 
-QA: @Darren
+QA: @jsmall-lab
 
-... @Name
+Github: @jsmall-lab
+
+Testing: @LordCam2005
 
 
 # Timeline

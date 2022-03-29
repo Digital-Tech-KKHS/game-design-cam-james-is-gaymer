@@ -2,11 +2,12 @@
 
 # Locations
 
-### The imperial capital
+### Main Asteroid Belt
 
-![The imperial capital](https://www.brides.com/thmb/vpAarznfY50IXgAZd8Z0wgajqaw=/750x0/filters:no_upscale():max_bytes(200000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__brides__proteus__5af9c06d368ea641e4c3a24d__11-75c2514d4c5c4dca921c0f35f2621c86.jpeg)
+![Space](https://hips.hearstapps.com/pop.h-cdn.co/assets/16/33/1024x512/landscape-1471291282-nasa-belt.jpg?resize=1200:*)
 
 ## Secondary locations
+(No Secondary locations yet)
 
 Location #1
 
@@ -24,10 +25,14 @@ Location #3
 
 Character #1
 
+Space Engineer (Player) 
+Name = Hunter
+
 ...
 
 Character #2
 
+basic Space Zombie Trooper (Enemy 1)
 ...
 
 Character #3
