@@ -2,6 +2,8 @@ import random
 
 import arcade
 
+from .entity import BasicEnemy
+
 WIDTH = 1600
 HEIGHT = 800
 TITLE = "test"
@@ -96,6 +98,11 @@ class TestGame(arcade.View):
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.scene["player"], self.scene["rocks"]
         )
+
+        enemy = BasicEnemy("zombie")
+        enemy.center_x = 100
+        enemy.center_y = 100
+        self.scene.add_sprite("zombie", enemy)
 
     def on_draw(self):
         self.clear()
