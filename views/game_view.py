@@ -48,6 +48,7 @@ class TestGame(arcade.View):
         self.scene = arcade.Scene()
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
+        self.scene.add_sprite_list("zombie")
 
         self.player_bullet_list = arcade.SpriteList()
 
@@ -99,10 +100,11 @@ class TestGame(arcade.View):
             self.scene["player"], self.scene["rocks"]
         )
 
-        enemy = BasicEnemy("zombie")
-        enemy.center_x = 100
-        enemy.center_y = 100
-        self.scene.add_sprite("zombie", enemy)
+        enemy = BasicEnemy("enemy")
+        enemy.center_x = self.player_sprite.center_x + 50
+        enemy.center_y = self.player_sprite.center_y + 50
+        self.scene["zombie"].append(enemy)
+        print(len(self.scene["zombie"]))
 
     def on_draw(self):
         self.clear()

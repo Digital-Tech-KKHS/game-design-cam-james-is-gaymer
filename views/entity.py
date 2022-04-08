@@ -3,9 +3,9 @@ import arcade
 
 class Entity(arcade.Sprite):
     def __init__(self, name_file):
-        super().__init__()
 
         main_path = f"assets/{name_file}_idle.png"
+        super().__init__(main_path)
 
 
 class Enemy(Entity):
