@@ -104,7 +104,12 @@ class TestGame(arcade.View):
         enemy.center_x = self.player_sprite.center_x + 50
         enemy.center_y = self.player_sprite.center_y + 50
         self.scene["zombie"].append(enemy)
-        print(len(self.scene["zombie"]))
+        
+        for i in range(50):
+            enemy = BasicEnemy("enemy")
+            enemy.center_x = random.randint(-5000,5000)
+            enemy.center_y = random.randint(-5000,5000)
+            self.scene["zombie"].append(enemy)
 
     def on_draw(self):
         self.clear()
