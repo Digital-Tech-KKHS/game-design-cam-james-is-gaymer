@@ -2,6 +2,7 @@ import arcade
 
 SCALEING = 2
 
+
 class Entity(arcade.Sprite):
     def __init__(self, name_file):
 

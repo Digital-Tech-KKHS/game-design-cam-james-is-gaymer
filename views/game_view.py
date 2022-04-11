@@ -17,6 +17,8 @@ PLAYER_ANGLE_DECCELERATION = 0.03
 
 METEOR_MOVEMENT_CONSTANT = 7
 
+MAX_SPAWN_TIME = 60
+
 
 class TestGame(arcade.View):
     def __init__(self):
@@ -38,6 +40,9 @@ class TestGame(arcade.View):
         self.physics_engine = None
 
         self.camera = None
+
+        self.spawn_time = None
+        self.time_between_spawn = None
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -104,12 +109,10 @@ class TestGame(arcade.View):
         enemy.center_x = self.player_sprite.center_x + 50
         enemy.center_y = self.player_sprite.center_y + 50
         self.scene["zombie"].append(enemy)
-        
-        for i in range(50):
-            enemy = BasicEnemy("enemy")
-            enemy.center_x = random.randint(-5000,5000)
-            enemy.center_y = random.randint(-5000,5000)
-            self.scene["zombie"].append(enemy)
+
+        self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+        self.time_between_spawn = 0
+        print(self.spawn_time)
 
     def on_draw(self):
         self.clear()
@@ -158,6 +161,18 @@ class TestGame(arcade.View):
 
         # for rock in self.scene["rocks"]:
         # touching = arcade.check_for_collision_with_list(rock, self.scene["rocks"])
+
+        self.time_between_spawn += delta_time
+        if self.time_between_spawn >= self.spawn_time:
+            print("spawned")
+            for i in range(random.randint(0, 50)):
+                enemy = BasicEnemy("enemy")
+                enemy.center_x = random.randint(-2000, 2000)
+                enemy.center_y = random.randint(-2000, 2000)
+                self.scene["zombie"].append(enemy)
+
+            self.time_between_spawn = 0
+            self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
