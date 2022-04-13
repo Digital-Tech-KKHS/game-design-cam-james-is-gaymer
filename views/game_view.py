@@ -17,7 +17,7 @@ PLAYER_ANGLE_DECCELERATION = 0.03
 
 METEOR_MOVEMENT_CONSTANT = 7
 
-MAX_SPAWN_TIME = 60
+MAX_SPAWN_TIME = 1
 
 
 class TestGame(arcade.View):
@@ -167,9 +167,12 @@ class TestGame(arcade.View):
             print("spawned")
             for i in range(random.randint(0, 50)):
                 enemy = BasicEnemy("enemy")
-                enemy.center_x = random.randint(-2000, 2000)
-                enemy.center_y = random.randint(-2000, 2000)
-                self.scene["zombie"].append(enemy)
+                enemy.center_x = random.uniform(self.screen_center_x - 4000, self.screen_center_x + 4000)
+                enemy.center_y = random.uniform(self.screen_center_y - 4000, self.screen_center_y + 4000)
+                if enemy.center_x < self.screen_center_x + WIDTH and self.screen_center_x > self.screen_center_x - WIDTH:
+                    if enemy.center_y < self.screen_center_y + HEIGHT and self.screen_center_y > self.screen_center_y - HEIGHT:
+                        self.scene["zombie"].append(enemy)
+                        print(i)
 
             self.time_between_spawn = 0
             self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
@@ -213,13 +216,13 @@ class TestGame(arcade.View):
             self.moving_angle = False
 
     def center_camera(self):
-        screen_center_x = self.player_sprite.center_x - WIDTH / 2
-        screen_center_y = self.player_sprite.center_y - HEIGHT / 2
+        self.screen_center_x = self.player_sprite.center_x - WIDTH / 2
+        self.screen_center_y = self.player_sprite.center_y - HEIGHT / 2
 
         # if screen_center_x < 0:
         # screen_center_x = 0
         # if screen_center_y < 0:
         # screen_center_y = 0
 
-        player_centered = screen_center_x, screen_center_y
+        player_centered = self.screen_center_x, self.screen_center_y
         self.camera.move_to(player_centered)
