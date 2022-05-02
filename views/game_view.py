@@ -1,4 +1,5 @@
 import random
+from turtle import width
 
 import arcade
 
@@ -164,18 +165,30 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            print("spawned")
-            for i in range(random.randint(0, 50)):
-                enemy = BasicEnemy("enemy")
-                enemy.center_x = random.uniform(self.screen_center_x - 4000, self.screen_center_x + 4000)
-                enemy.center_y = random.uniform(self.screen_center_y - 4000, self.screen_center_y + 4000)
-                if enemy.center_x < self.screen_center_x + WIDTH and self.screen_center_x > self.screen_center_x - WIDTH:
-                    if enemy.center_y < self.screen_center_y + HEIGHT and self.screen_center_y > self.screen_center_y - HEIGHT:
-                        self.scene["zombie"].append(enemy)
-                        print(i)
-
+            self.spawn_enemy()
             self.time_between_spawn = 0
             self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+
+    def spawn_enemy(self):
+        while True:
+            enemy = BasicEnemy("enemy")
+            enemy.center_x = random.uniform(
+                self.player_sprite.center_x - 4000, self.player_sprite.center_x + 4000
+            )
+            enemy.center_y = random.uniform(
+                self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
+            )
+            # stops enemy from spawning within a certain area from the player
+            if not (
+                self.camera.position[0] - 50
+                < enemy.center_x
+                < self.camera.position[0] + WIDTH + 50
+                and self.camera.position[1] - 50
+                < enemy.center_y
+                < self.camera.position[1] + HEIGHT + 50
+            ):
+                self.scene["zombie"].append(enemy)
+                break
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
@@ -216,13 +229,7 @@ class TestGame(arcade.View):
             self.moving_angle = False
 
     def center_camera(self):
-        self.screen_center_x = self.player_sprite.center_x - WIDTH / 2
-        self.screen_center_y = self.player_sprite.center_y - HEIGHT / 2
-
-        # if screen_center_x < 0:
-        # screen_center_x = 0
-        # if screen_center_y < 0:
-        # screen_center_y = 0
-
-        player_centered = self.screen_center_x, self.screen_center_y
+        screen_center_x = self.player_sprite.center_x - WIDTH / 2
+        screen_center_y = self.player_sprite.center_y - HEIGHT / 2
+        player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
