@@ -3,7 +3,10 @@ from turtle import width
 
 import arcade
 
+from views.entity import Rock
+
 from .entity import BasicEnemy
+from .entity import Rock
 
 WIDTH = 1600
 HEIGHT = 800
@@ -73,34 +76,10 @@ class TestGame(arcade.View):
         self.accelerating_right = False
         self.moving = False
         self.moving_angle = False
-        rock_choices = [
-            "meteorGrey_big4.png",
-            "meteorGrey_big1.png",
-            "meteorGrey_big2.png",
-            "meteorGrey_big3.png",
-            "meteorGrey_small1.png",
-            "meteorGrey_small2.png",
-            "meteorGrey_tiny1.png",
-            "meteorGrey_tiny2.png",
-            "meteorGrey_med1.png",
-            "meteorGrey_med2.png",
-        ]
-        for i in range(10):
-            rock = arcade.Sprite(
-                f":resources:images/space_shooter/{random.choice(rock_choices)}",
-                0.5 + random.random() * 2,
-                center_x=random.randint(0, WIDTH),
-                center_y=random.randint(0, HEIGHT),
-            )
-            rock.change_x = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-            )
-            rock.change_y = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-            )
-            self.scene["rocks"].append(rock)
+
+
+
+        self.spawn_meteor
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.scene["player"], self.scene["rocks"]
@@ -168,6 +147,8 @@ class TestGame(arcade.View):
             self.spawn_enemy()
             self.time_between_spawn = 0
             self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+        
+
 
     def spawn_enemy(self):
         while True:
@@ -189,6 +170,15 @@ class TestGame(arcade.View):
             ):
                 self.scene["zombie"].append(enemy)
                 break
+
+    def spawn_meteor(self):
+        while True:
+            meteor = Rock("meteor")
+            meteor.center_x = self.player_sprite.center_x
+            meteor.center_y = self.player_sprite.center_y
+            self.scene["rocks"].append(meteor)
+            print("done")
+            break
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
