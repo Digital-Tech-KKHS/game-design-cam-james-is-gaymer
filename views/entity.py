@@ -3,7 +3,7 @@ import arcade
 import random
 
 ENEMY_SCALEING = 2
-DEBRIS_SCALING = 1
+
 
 
 class Entity(arcade.Sprite):
@@ -27,7 +27,7 @@ class BasicEnemy(Enemy):
 class Debris(Entity):
     def __init__(self, name_file):
         super().__init__(name_file)
-        self.scale = DEBRIS_SCALING
+        self.scale = random.randint(1,10)
 
 class Scrap(Debris):
     def __init__(self, name_file):
@@ -38,4 +38,4 @@ class Rock(Debris):
         num = random.randint(1,5)
         print(num)
         super().__init__(f"meteor_{num}")
-
+    

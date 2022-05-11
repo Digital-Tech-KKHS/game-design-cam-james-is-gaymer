@@ -79,7 +79,7 @@ class TestGame(arcade.View):
 
 
 
-        self.spawn_meteor
+        
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.scene["player"], self.scene["rocks"]
@@ -129,15 +129,7 @@ class TestGame(arcade.View):
             if self.player_sprite.change_angle > 0:
                 self.player_sprite.change_angle -= PLAYER_ANGLE_DECCELERATION
 
-        for rock in self.scene["rocks"]:
-            if rock.center_x < 0:
-                rock.center_x = WIDTH
-            if rock.center_x > WIDTH:
-                rock.center_x = 0
-            if rock.center_y < 0:
-                rock.center_y = HEIGHT
-            if rock.center_y > HEIGHT:
-                rock.center_y = 0
+
 
         # for rock in self.scene["rocks"]:
         # touching = arcade.check_for_collision_with_list(rock, self.scene["rocks"])
@@ -145,6 +137,7 @@ class TestGame(arcade.View):
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
             self.spawn_enemy()
+            self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
         
@@ -174,11 +167,24 @@ class TestGame(arcade.View):
     def spawn_meteor(self):
         while True:
             meteor = Rock("meteor")
-            meteor.center_x = self.player_sprite.center_x
-            meteor.center_y = self.player_sprite.center_y
-            self.scene["rocks"].append(meteor)
-            print("done")
-            break
+            meteor.center_x = random.uniform(
+                self.player_sprite.center_x - 4000, self.player_sprite.center_x + 4000
+            )
+            meteor.center_y = random.uniform(
+                self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
+            )
+            meteor.angle = random.randint(0,360)
+            # stops meteor from spawning within a certain area from the player
+            if not (
+                self.camera.position[0] - 50
+                < meteor.center_x
+                < self.camera.position[0] + WIDTH + 50
+                and self.camera.position[1] - 50
+                < meteor.center_y
+                < self.camera.position[1] + HEIGHT + 50
+            ):
+                self.scene["rocks"].append(meteor)
+                break
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
