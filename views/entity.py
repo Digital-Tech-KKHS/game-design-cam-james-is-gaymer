@@ -1,4 +1,4 @@
-from re import X
+
 import arcade
 import random
 
