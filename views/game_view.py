@@ -1,6 +1,12 @@
 import random
+from turtle import width
 
 import arcade
+
+from views.entity import Rock
+
+from .entity import BasicEnemy
+from .entity import Rock
 
 WIDTH = 1600
 HEIGHT = 800
@@ -14,6 +20,8 @@ PLAYER_CHANGE_ANGLE_SPEED = 3
 PLAYER_ANGLE_DECCELERATION = 0.03
 
 METEOR_MOVEMENT_CONSTANT = 7
+
+MAX_SPAWN_TIME = 1
 
 
 class TestGame(arcade.View):
@@ -37,6 +45,9 @@ class TestGame(arcade.View):
 
         self.camera = None
 
+        self.spawn_time = None
+        self.time_between_spawn = None
+
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -46,6 +57,7 @@ class TestGame(arcade.View):
         self.scene = arcade.Scene()
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
+        self.scene.add_sprite_list("zombie")
 
         self.player_bullet_list = arcade.SpriteList()
 
@@ -64,38 +76,23 @@ class TestGame(arcade.View):
         self.accelerating_right = False
         self.moving = False
         self.moving_angle = False
-        rock_choices = [
-            "meteorGrey_big4.png",
-            "meteorGrey_big1.png",
-            "meteorGrey_big2.png",
-            "meteorGrey_big3.png",
-            "meteorGrey_small1.png",
-            "meteorGrey_small2.png",
-            "meteorGrey_tiny1.png",
-            "meteorGrey_tiny2.png",
-            "meteorGrey_med1.png",
-            "meteorGrey_med2.png",
-        ]
-        for i in range(10):
-            rock = arcade.Sprite(
-                f":resources:images/space_shooter/{random.choice(rock_choices)}",
-                0.5 + random.random() * 2,
-                center_x=random.randint(0, WIDTH),
-                center_y=random.randint(0, HEIGHT),
-            )
-            rock.change_x = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-            )
-            rock.change_y = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-            )
-            self.scene["rocks"].append(rock)
+
+
+
+        
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.scene["player"], self.scene["rocks"]
         )
+
+        enemy = BasicEnemy("enemy")
+        enemy.center_x = self.player_sprite.center_x + 50
+        enemy.center_y = self.player_sprite.center_y + 50
+        self.scene["zombie"].append(enemy)
+
+        self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+        self.time_between_spawn = 0
+        print(self.spawn_time)
 
     def on_draw(self):
         self.clear()
@@ -132,18 +129,62 @@ class TestGame(arcade.View):
             if self.player_sprite.change_angle > 0:
                 self.player_sprite.change_angle -= PLAYER_ANGLE_DECCELERATION
 
-        for rock in self.scene["rocks"]:
-            if rock.center_x < 0:
-                rock.center_x = WIDTH
-            if rock.center_x > WIDTH:
-                rock.center_x = 0
-            if rock.center_y < 0:
-                rock.center_y = HEIGHT
-            if rock.center_y > HEIGHT:
-                rock.center_y = 0
+
 
         # for rock in self.scene["rocks"]:
         # touching = arcade.check_for_collision_with_list(rock, self.scene["rocks"])
+
+        self.time_between_spawn += delta_time
+        if self.time_between_spawn >= self.spawn_time:
+            self.spawn_enemy()
+            self.spawn_meteor()
+            self.time_between_spawn = 0
+            self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+        
+
+
+    def spawn_enemy(self):
+        while True:
+            enemy = BasicEnemy("enemy")
+            enemy.center_x = random.uniform(
+                self.player_sprite.center_x - 4000, self.player_sprite.center_x + 4000
+            )
+            enemy.center_y = random.uniform(
+                self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
+            )
+            # stops enemy from spawning within a certain area from the player
+            if not (
+                self.camera.position[0] - 50
+                < enemy.center_x
+                < self.camera.position[0] + WIDTH + 50
+                and self.camera.position[1] - 50
+                < enemy.center_y
+                < self.camera.position[1] + HEIGHT + 50
+            ):
+                self.scene["zombie"].append(enemy)
+                break
+
+    def spawn_meteor(self):
+        while True:
+            meteor = Rock("meteor")
+            meteor.center_x = random.uniform(
+                self.player_sprite.center_x - 4000, self.player_sprite.center_x + 4000
+            )
+            meteor.center_y = random.uniform(
+                self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
+            )
+            meteor.angle = random.randint(0,360)
+            # stops meteor from spawning within a certain area from the player
+            if not (
+                self.camera.position[0] - 50
+                < meteor.center_x
+                < self.camera.position[0] + WIDTH + 50
+                and self.camera.position[1] - 50
+                < meteor.center_y
+                < self.camera.position[1] + HEIGHT + 50
+            ):
+                self.scene["rocks"].append(meteor)
+                break
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
@@ -186,11 +227,5 @@ class TestGame(arcade.View):
     def center_camera(self):
         screen_center_x = self.player_sprite.center_x - WIDTH / 2
         screen_center_y = self.player_sprite.center_y - HEIGHT / 2
-
-        # if screen_center_x < 0:
-        # screen_center_x = 0
-        # if screen_center_y < 0:
-        # screen_center_y = 0
-
         player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
