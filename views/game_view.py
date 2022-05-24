@@ -92,7 +92,7 @@ class TestGame(arcade.View):
         enemy.center_y = self.player_sprite.center_y + 50
         self.scene["zombie"].append(enemy)
 
-        self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+        self.spawn_time = 0.001
         self.time_between_spawn = 0
 
         # adds player sprite to physics engine
@@ -148,7 +148,7 @@ class TestGame(arcade.View):
             self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
-            self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
+            self.spawn_time = 0.001
 
         # updates physics engine
         self.physics_engine.step()
@@ -159,8 +159,8 @@ class TestGame(arcade.View):
 
         while True:
             enemy = BasicEnemy("enemy")
-            enemy.center_x = random.uniform(player_pos[0] - 400, player_pos[0] + 400)
-            enemy.center_y = random.uniform(player_pos[1] - 400, player_pos[1] + 400)
+            enemy.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
+            enemy.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
             # stops enemy from spawning within a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -179,9 +179,17 @@ class TestGame(arcade.View):
 
         while True:
             meteor = Rock("meteor")
-            meteor.center_x = random.uniform(player_pos[0] - 400, player_pos[0] + 400)
-            meteor.center_y = random.uniform(player_pos[1] - 400, player_pos[1] + 400)
+            meteor.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
+            meteor.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
             meteor.angle = random.randint(0, 360)
+            meteor.change_x = (
+                random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+            )
+            meteor.change_y = (
+                random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+            )
             # stops meteor from spawning within a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -195,8 +203,8 @@ class TestGame(arcade.View):
 
                 # creates a mass which is determined by overall area size of the sprite
                 # creates an individual body for each meteor and adds it into physics engine
-                # mass = METEOR_MASS * (meteor.center_y * meteor.center_y )
-                # self.physics_engine.add_sprite(meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7)
+                mass = METEOR_MASS * (meteor.center_y * meteor.center_y )
+                self.physics_engine.add_sprite(meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7)
 
                 break
 
