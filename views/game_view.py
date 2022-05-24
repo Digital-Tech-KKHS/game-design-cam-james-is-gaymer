@@ -1,7 +1,7 @@
 import random
-from turtle import width
-
 import arcade
+import math
+
 
 from views.entity import Rock
 
@@ -14,12 +14,20 @@ TITLE = "test"
 
 CHARACTER_SCAILING = 2
 
-PLAYER_ACCELERATION = 0.05
-PLAYER_DEACCELERATION = 0.02
-PLAYER_CHANGE_ANGLE_SPEED = 3
-PLAYER_ANGLE_DECCELERATION = 0.03
+DEFAULT_DAMPNING = 1.0
 
+# player constants that will be implemented into pymunk physics engine
+PLAYER_ACCELERATION = 6000
+PLAYER_DEACCELERATION = 0.02
+PLAYER_MASS = 20
+PLAYER_FRICTION = 0.2
+PLAYER_MAX_SPEED = 215
+PLAYER_DAMPNING = 0.58
+
+# meteor constants settings for physics engine to use
 METEOR_MOVEMENT_CONSTANT = 7
+METEOR_MASS = 20
+METEOR_FRICTION = 2.0
 
 MAX_SPAWN_TIME = 1
 
@@ -29,6 +37,7 @@ class TestGame(arcade.View):
         super().__init__()
 
         self.player_sprite = None
+        self.player_body = None
 
         self.scene = None
 
@@ -38,8 +47,6 @@ class TestGame(arcade.View):
         self.accelerating_down = None
         self.accelerating_left = None
         self.accelerating_right = None
-        self.moving = None
-        self.moving_angle = None
 
         self.physics_engine = None
 
@@ -59,7 +66,12 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
 
-        self.player_bullet_list = arcade.SpriteList()
+        # implementing of physics engine into code ready for sprites to be put in
+        self.physics_engine = arcade.PymunkPhysicsEngine(
+            damping=DEFAULT_DAMPNING, gravity=(0, 0)
+        )
+
+        #self.player_bullet_list = arcade.SpriteList()
 
         self.camera = arcade.Camera(WIDTH, HEIGHT)
 
@@ -69,21 +81,11 @@ class TestGame(arcade.View):
         self.player_sprite.center_y = 400
         self.scene.add_sprite("player", self.player_sprite)
 
-        self.player_speed = 0
+
         self.accelerating_up = False
         self.accelerating_down = False
         self.accelerating_left = False
         self.accelerating_right = False
-        self.moving = False
-        self.moving_angle = False
-
-
-
-        
-
-        self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.scene["player"], self.scene["rocks"]
-        )
 
         enemy = BasicEnemy("enemy")
         enemy.center_x = self.player_sprite.center_x + 50
@@ -92,7 +94,22 @@ class TestGame(arcade.View):
 
         self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
         self.time_between_spawn = 0
-        print(self.spawn_time)
+
+        # adds player sprite to physics engine
+        # gets player body so code can find variables on player body speed and posistion
+        self.physics_engine.add_sprite(
+            self.player_sprite,
+            mass=PLAYER_MASS,
+            friction=PLAYER_FRICTION,
+            elasticity=0.4,
+            moment_of_inertia=math.inf,
+            max_horizontal_velocity=PLAYER_MAX_SPEED,
+            max_vertical_velocity=PLAYER_MAX_SPEED,
+            damping=PLAYER_DAMPNING,
+        )
+        self.player_body = self.physics_engine.get_physics_object(
+            self.player_sprite
+        ).body
 
     def on_draw(self):
         self.clear()
@@ -102,37 +119,29 @@ class TestGame(arcade.View):
         self.scene.draw()
 
     def on_update(self, delta_time):
-        self.scene.update()
+        #self.scene.update()
 
         self.center_camera()
 
+        # player bodies movement control
+        # applies a force to the player body center and moves it in a
+        # direction determined by force applied over 2d vectors
         if self.accelerating_right:
-            self.player_sprite.change_x += PLAYER_ACCELERATION
+            self.player_body.apply_force_at_world_point(
+                (PLAYER_ACCELERATION, 0), (0, 0)
+            )
         if self.accelerating_left:
-            self.player_sprite.change_x -= PLAYER_ACCELERATION
+            self.player_body.apply_force_at_world_point(
+                (-PLAYER_ACCELERATION, 0), (0, 0)
+            )
         if self.accelerating_up:
-            self.player_sprite.change_y += PLAYER_ACCELERATION
+            self.player_body.apply_force_at_world_point(
+                (0, PLAYER_ACCELERATION), (0, 0)
+            )
         if self.accelerating_down:
-            self.player_sprite.change_y -= PLAYER_ACCELERATION
-        if not self.moving:
-            if self.player_sprite.change_x > 0:
-                self.player_sprite.change_x -= PLAYER_DEACCELERATION
-            elif self.player_sprite.change_x < 0:
-                self.player_sprite.change_x += PLAYER_DEACCELERATION
-            if self.player_sprite.change_y > 0:
-                self.player_sprite.change_y -= PLAYER_DEACCELERATION
-            elif self.player_sprite.change_y < 0:
-                self.player_sprite.change_y += PLAYER_DEACCELERATION
-        if not self.moving_angle:
-            if self.player_sprite.change_angle < 0:
-                self.player_sprite.change_angle += PLAYER_ANGLE_DECCELERATION
-            if self.player_sprite.change_angle > 0:
-                self.player_sprite.change_angle -= PLAYER_ANGLE_DECCELERATION
-
-
-
-        # for rock in self.scene["rocks"]:
-        # touching = arcade.check_for_collision_with_list(rock, self.scene["rocks"])
+            self.player_body.apply_force_at_world_point(
+                (0, -PLAYER_ACCELERATION), (0, 0)
+            )
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
@@ -140,18 +149,18 @@ class TestGame(arcade.View):
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
-        
 
+        # updates physics engine
+        self.physics_engine.step()
 
     def spawn_enemy(self):
+        # retreives player position so it can spawn enemies
+        player_pos = self.player_body._get_position()
+
         while True:
             enemy = BasicEnemy("enemy")
-            enemy.center_x = random.uniform(
-                self.player_sprite.center_x - 4000, self.player_sprite.center_x + 4000
-            )
-            enemy.center_y = random.uniform(
-                self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
-            )
+            enemy.center_x = random.uniform(player_pos[0] - 400, player_pos[0] + 400)
+            enemy.center_y = random.uniform(player_pos[1] - 400, player_pos[1] + 400)
             # stops enemy from spawning within a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -165,15 +174,14 @@ class TestGame(arcade.View):
                 break
 
     def spawn_meteor(self):
+        # retrieves player position to be able to spawn meteors
+        player_pos = self.player_body._get_position()
+
         while True:
             meteor = Rock("meteor")
-            meteor.center_x = random.uniform(
-                self.player_sprite.center_x - 4000, self.player_sprite.center_x + 4000
-            )
-            meteor.center_y = random.uniform(
-                self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
-            )
-            meteor.angle = random.randint(0,360)
+            meteor.center_x = random.uniform(player_pos[0] - 400, player_pos[0] + 400)
+            meteor.center_y = random.uniform(player_pos[1] - 400, player_pos[1] + 400)
+            meteor.angle = random.randint(0, 360)
             # stops meteor from spawning within a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -184,48 +192,39 @@ class TestGame(arcade.View):
                 < self.camera.position[1] + HEIGHT + 50
             ):
                 self.scene["rocks"].append(meteor)
+
+                # creates a mass which is determined by overall area size of the sprite
+                # creates an individual body for each meteor and adds it into physics engine
+                # mass = METEOR_MASS * (meteor.center_y * meteor.center_y )
+                # self.physics_engine.add_sprite(meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7)
+
                 break
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
             self.accelerating_up = True
-            self.moving = True
         if key == arcade.key.S:
             self.accelerating_down = True
-            self.moving = True
         if key == arcade.key.D:
             self.accelerating_right = True
-            self.moving = True
         if key == arcade.key.A:
             self.accelerating_left = True
-            self.moving = True
-        if key == arcade.key.LEFT:
-            self.player_sprite.change_angle = PLAYER_CHANGE_ANGLE_SPEED
-            self.moving_angle = True
-        if key == arcade.key.RIGHT:
-            self.player_sprite.change_angle = -PLAYER_CHANGE_ANGLE_SPEED
-            self.moving_angle = True
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
             self.accelerating_up = False
-            self.moving = False
         if key == arcade.key.S:
             self.accelerating_down = False
-            self.moving = False
         if key == arcade.key.D:
             self.accelerating_right = False
-            self.moving = False
         if key == arcade.key.A:
             self.accelerating_left = False
-            self.moving = False
-        if key == arcade.key.LEFT:
-            self.moving_angle = False
-        if key == arcade.key.RIGHT:
-            self.moving_angle = False
 
     def center_camera(self):
-        screen_center_x = self.player_sprite.center_x - WIDTH / 2
-        screen_center_y = self.player_sprite.center_y - HEIGHT / 2
+        # retrives player pos for camera centering
+        player_pos = self.player_body._get_position()
+
+        screen_center_x = player_pos[0] - WIDTH / 2
+        screen_center_y = player_pos[1] - HEIGHT / 2
         player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
