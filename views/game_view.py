@@ -27,7 +27,7 @@ PLAYER_DAMPNING = 0.58
 # meteor constants settings for physics engine to use
 METEOR_MOVEMENT_CONSTANT = 7
 METEOR_MASS = 20
-METEOR_FRICTION = 2.0
+METEOR_FRICTION = 0.99999
 
 MAX_SPAWN_TIME = 1
 
@@ -115,8 +115,10 @@ class TestGame(arcade.View):
         self.clear()
 
         self.camera.use()
+        
 
         self.scene.draw()
+        self.scene.draw_hit_boxes(color = arcade.color.RED)
 
     def on_update(self, delta_time):
         #self.scene.update()
@@ -182,14 +184,7 @@ class TestGame(arcade.View):
             meteor.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
             meteor.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
             meteor.angle = random.randint(0, 360)
-            meteor.change_x = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-            )
-            meteor.change_y = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-            )
+
             # stops meteor from spawning within a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -204,7 +199,17 @@ class TestGame(arcade.View):
                 # creates a mass which is determined by overall area size of the sprite
                 # creates an individual body for each meteor and adds it into physics engine
                 mass = METEOR_MASS * (meteor.center_y * meteor.center_y )
-                self.physics_engine.add_sprite(meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7)
+                self.physics_engine.add_sprite(meteor, mass=mass, elasticity=0.7, moment_of_inertia=math.inf, friction=METEOR_FRICTION, damping=PLAYER_DAMPNING)
+                rock_body = self.physics_engine.get_physics_object(meteor).body
+
+                change_x = random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+
+                change_y = random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+                rock_body.apply_impulse_at_world_point((change_x, change_y), (0,0))
+                
+
 
                 break
 
