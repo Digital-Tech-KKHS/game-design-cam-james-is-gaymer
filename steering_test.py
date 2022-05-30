@@ -1,17 +1,20 @@
 import arcade
+import random
 from pyglet.math import Vec2
+import math
 
-class Vehicle:
+class Vehicle(arcade.Sprite):
     def __init__(self, pos):
+        super().__init__(":resources:images/space_shooter/playerShip1_orange.png")
         self.pos = Vec2()
         self.vel = Vec2()
         self.acc = Vec2()
         self.forces = []
         self.max_speed = 20
         self.max_force = 0.1
+        
 
-    def draw(self):
-        arcade.draw_circle_filled(self.pos[0], self.pos[1], 25, arcade.color.PURPLE_PIZZAZZ)
+
 
     def update(self):
         self.acc = sum(self.forces).clamp(-self.max_force, self.max_force)
@@ -20,6 +23,9 @@ class Vehicle:
         self.pos += self.vel
         self.forces = []
         self.acc = 0
+        self.center_x = self.pos[0]
+        self.center_y = self.pos[1]
+        self.angle = math.degrees(self.vel.heading) - 90
 
     def seek(self, target: Vec2):
         ideal = target - self.pos
@@ -32,7 +38,17 @@ class Game(arcade.Window):
     def __init__(self):
         super().__init__()
         arcade.set_background_color(arcade.color.AIR_FORCE_BLUE)
-        self.vehicle = Vehicle(Vec2())
+
+        
+
+    def setup(self):
+            
+            self.scene = arcade.Scene()
+            self.scene.add_sprite_list("vehicle")
+            for i in range(10):
+                self.vehicle = Vehicle(Vec2())
+                self.scene.add_sprite("vehicle", self.vehicle)
+
 
     def on_draw(self):
         self.clear()
@@ -44,4 +60,5 @@ class Game(arcade.Window):
         self.vehicle.update()
 
 game = Game()
+game.setup()
 arcade.run()
