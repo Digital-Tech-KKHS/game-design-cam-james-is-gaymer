@@ -5,13 +5,13 @@ import math
 
 class Vehicle(arcade.Sprite):
     def __init__(self, pos):
-        super().__init__(":resources:images/space_shooter/playerShip1_orange.png")
-        self.pos = Vec2()
+        super().__init__(":resources:images/space_shooter/playerShip1_orange.png", 0.3)
+        self.pos = Vec2(random.randint(0,800),random.randint(0,800))
         self.vel = Vec2()
         self.acc = Vec2()
         self.forces = []
         self.max_speed = 20
-        self.max_force = 0.1
+        self.max_force = 0.2
         
 
 
@@ -34,6 +34,14 @@ class Vehicle(arcade.Sprite):
         force = force.clamp(-self.max_force, self.max_force)
         self.forces.append(force)
 
+    def flee(self, target: Vec2, radius):
+        if self.pos.distance(target) < radius:
+            ideal = -(target - self.pos)
+            ideal = ideal.from_magnitude(self.max_speed)
+            force = ideal - self.vel
+            force = force.clamp(-self.max_force, self.max_force)
+            self.forces.append(force)
+
 class Game(arcade.Window):
     def __init__(self):
         super().__init__()
@@ -45,7 +53,7 @@ class Game(arcade.Window):
             
             self.scene = arcade.Scene()
             self.scene.add_sprite_list("vehicle")
-            for i in range(10):
+            for i in range(50):
                 self.vehicle = Vehicle(Vec2())
                 self.scene.add_sprite("vehicle", self.vehicle)
 
@@ -53,11 +61,15 @@ class Game(arcade.Window):
     def on_draw(self):
         self.clear()
         arcade.draw_circle_filled(self._mouse_x, self._mouse_y, 25, arcade.color.ALABAMA_CRIMSON)
-        self.vehicle.draw()
+        self.scene.draw()
 
     def update(self, delta_time: float):
-        self.vehicle.seek(Vec2(self._mouse_x, self._mouse_y))
-        self.vehicle.update()
+        for vehicle in self.scene["vehicle"]:
+            vehicle.seek(Vec2(self._mouse_x, self._mouse_y))
+            vehicle.update()
+            for other in self.scene["vehicle"]:
+                if vehicle is not other:
+                    vehicle.flee(other.pos, 150)
 
 game = Game()
 game.setup()
