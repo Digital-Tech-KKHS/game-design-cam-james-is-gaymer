@@ -67,6 +67,7 @@ class Game(arcade.Window):
         for vehicle in self.scene["vehicle"]:
             vehicle.seek(Vec2(self._mouse_x, self._mouse_y))
             vehicle.update()
+            #stops vehicle from fleeing from itself
             for other in self.scene["vehicle"]:
                 if vehicle is not other:
                     vehicle.flee(other.pos, 150)
