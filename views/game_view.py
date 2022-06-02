@@ -26,8 +26,8 @@ PLAYER_DAMPNING = 0.58
 
 # meteor constants settings for physics engine to use
 METEOR_MOVEMENT_CONSTANT = 7
-METEOR_MASS = 20
-METEOR_FRICTION = 0.99999
+METEOR_MASS = 0.5
+METEOR_FRICTION = 2.0
 
 MAX_SPAWN_TIME = 1
 
@@ -122,28 +122,12 @@ class TestGame(arcade.View):
 
     def on_update(self, delta_time):
         #self.scene.update()
+        
+        self.player_movement()
 
         self.center_camera()
 
-        # player bodies movement control
-        # applies a force to the player body center and moves it in a
-        # direction determined by force applied over 2d vectors
-        if self.accelerating_right:
-            self.player_body.apply_force_at_world_point(
-                (PLAYER_ACCELERATION, 0), (0, 0)
-            )
-        if self.accelerating_left:
-            self.player_body.apply_force_at_world_point(
-                (-PLAYER_ACCELERATION, 0), (0, 0)
-            )
-        if self.accelerating_up:
-            self.player_body.apply_force_at_world_point(
-                (0, PLAYER_ACCELERATION), (0, 0)
-            )
-        if self.accelerating_down:
-            self.player_body.apply_force_at_world_point(
-                (0, -PLAYER_ACCELERATION), (0, 0)
-            )
+
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
@@ -184,6 +168,11 @@ class TestGame(arcade.View):
             meteor.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
             meteor.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
             meteor.angle = random.randint(0, 360)
+            meteor.change_x = random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
+
+            meteor.change_y = random.random() * METEOR_MOVEMENT_CONSTANT
+                - METEOR_MOVEMENT_CONSTANT / 2
 
             # stops meteor from spawning within a certain area from the player
             if not (
@@ -199,17 +188,8 @@ class TestGame(arcade.View):
                 # creates a mass which is determined by overall area size of the sprite
                 # creates an individual body for each meteor and adds it into physics engine
                 mass = METEOR_MASS * (meteor.center_y * meteor.center_y )
-                self.physics_engine.add_sprite(meteor, mass=mass, elasticity=0.7, moment_of_inertia=math.inf, friction=METEOR_FRICTION, damping=PLAYER_DAMPNING)
-                rock_body = self.physics_engine.get_physics_object(meteor).body
-
-                change_x = random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-
-                change_y = random.random() * METEOR_MOVEMENT_CONSTANT
-                - METEOR_MOVEMENT_CONSTANT / 2
-                rock_body.apply_impulse_at_world_point((change_x, change_y), (0,0))
+                self.physics_engine.add_sprite(meteor, mass=mass, elasticity=0.7, moment_of_inertia=math.inf, friction=METEOR_FRICTION, damping=PLAYER_DAMPNING
                 
-
 
                 break
 
@@ -232,6 +212,27 @@ class TestGame(arcade.View):
             self.accelerating_right = False
         if key == arcade.key.A:
             self.accelerating_left = False
+                                               
+    def player_movement(self):
+        # player bodies movement control
+        # applies a force to the player body center and moves it in a
+        # direction determined by force applied over 2d vectors
+        if self.accelerating_right:
+            self.player_body.apply_force_at_world_point(
+                (PLAYER_ACCELERATION, 0), (0, 0)
+            )
+        if self.accelerating_left:
+            self.player_body.apply_force_at_world_point(
+                (-PLAYER_ACCELERATION, 0), (0, 0)
+            )
+        if self.accelerating_up:
+            self.player_body.apply_force_at_world_point(
+                (0, PLAYER_ACCELERATION), (0, 0)
+            )
+        if self.accelerating_down:
+            self.player_body.apply_force_at_world_point(
+                (0, -PLAYER_ACCELERATION), (0, 0)
+            )                                               
 
     def center_camera(self):
         # retrives player pos for camera centering
