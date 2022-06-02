@@ -188,7 +188,7 @@ class TestGame(arcade.View):
                 # creates a mass which is determined by overall area size of the sprite
                 # creates an individual body for each meteor and adds it into physics engine
                 mass = METEOR_MASS * (meteor.center_y * meteor.center_y )
-                self.physics_engine.add_sprite(meteor, mass=mass, elasticity=0.7, moment_of_inertia=math.inf, friction=METEOR_FRICTION, damping=PLAYER_DAMPNING
+                self.physics_engine.add_sprite(meteor, mass=mass, elasticity=0.7, moment_of_inertia=math.inf, friction=METEOR_FRICTION, damping=PLAYER_DAMPNING)
                 
 
                 break
