@@ -35,5 +35,5 @@ jobs:
         run: |
           black --check .
           isort --check .
-          flake8
+        
 
