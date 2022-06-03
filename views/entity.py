@@ -1,5 +1,6 @@
-import arcade
 import random
+
+import arcade
 
 ENEMY_SCALEING = 2
 
@@ -36,5 +37,5 @@ class Scrap(Debris):
 class Rock(Debris):
     def __init__(self, name_file):
         num = random.randint(1, 5)
-        #print(num)
+        # print(num)
         super().__init__(f"meteor_{num}")
