@@ -15,7 +15,7 @@ CHARACTER_SCAILING = 2
 
 DEFAULT_DAMPNING = 1.0
 
-# player constants that will be implemented 
+# player constants that will be implemented
 # into pymunk physics engine
 PLAYER_ACCELERATION = 6000
 PLAYER_DEACCELERATION = 0.02
@@ -144,7 +144,7 @@ class TestGame(arcade.View):
             enemy = BasicEnemy("enemy")
             enemy.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
             enemy.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
-            # stops enemy from spawning within 
+            # stops enemy from spawning within
             # a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -174,7 +174,7 @@ class TestGame(arcade.View):
                 random.random() * METEOR_MOVEMENT_CONSTANT
             ) - METEOR_MOVEMENT_CONSTANT / 2
 
-            # stops meteor from spawning within 
+            # stops meteor from spawning within
             # a certain area from the player
             if not (
                 self.camera.position[0] - 50
@@ -186,7 +186,7 @@ class TestGame(arcade.View):
             ):
                 self.scene["rocks"].append(meteor)
 
-                # creates a mass which is determined by, 
+                # creates a mass which is determined by,
                 # overall area size of the sprite
 
                 # creates an individual body for each,
