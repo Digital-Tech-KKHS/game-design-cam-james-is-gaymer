@@ -1,5 +1,6 @@
 import math
 import random
+import PIL
 
 import arcade
 
@@ -191,8 +192,7 @@ class TestGame(arcade.View):
 
                 # creates an individual body for each,
                 # meteor and adds it into physics engine
-                mass = METEOR_MASS * (meteor.center_y * meteor.center_y)
-                self.physics_engine.add_sprite(meteor, mass=mass, elasticity=1.0)
+                self.physics_engine.add_sprite(meteor, mass=meteor.mass, elasticity=1.0)
 
                 break
 

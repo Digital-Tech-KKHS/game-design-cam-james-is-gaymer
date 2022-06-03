@@ -1,6 +1,8 @@
 import random
-
+import PIL
 import arcade
+
+from views.game_view import METEOR_MASS
 
 ENEMY_SCALEING = 2
 
@@ -37,5 +39,10 @@ class Scrap(Debris):
 class Rock(Debris):
     def __init__(self, name_file):
         num = random.randint(1, 5)
-        # print(num)
         super().__init__(f"meteor_{num}")
+
+        image = PIL.Image.open(f"assets/meteor_{num}.png")
+
+        rock_width, rock_height = image.size
+        self.rock_area = rock_height * rock_width
+        self.mass = self.rock_area * METEOR_MASS
