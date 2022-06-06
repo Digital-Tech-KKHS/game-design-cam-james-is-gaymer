@@ -1,10 +1,7 @@
 import math
 import random
-import PIL
 
 import arcade
-
-from views.entity import Rock
 
 from .entity import BasicEnemy, Rock
 
@@ -26,9 +23,10 @@ PLAYER_MAX_SPEED = 215
 PLAYER_DAMPNING = 0.58
 
 # meteor constants settings for physics engine to use
-METEOR_MOVEMENT_CONSTANT = 7000000000
-METEOR_MASS = 0.1
-METEOR_FRICTION = 2.0
+METOR_MAX_SPEED = 40000
+METOR_MIN_SPEEED = 10000
+METEOR_MASS = 0.2
+METEOR_FRICTION = 0.2
 
 MAX_SPAWN_TIME = 1
 
@@ -118,7 +116,6 @@ class TestGame(arcade.View):
         self.camera.use()
 
         self.scene.draw()
-        self.scene.draw_hit_boxes(color=arcade.color.RED)
 
     def on_update(self, delta_time):
         # self.scene.update()
@@ -126,6 +123,9 @@ class TestGame(arcade.View):
         self.player_movement()
 
         self.center_camera()
+
+
+
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
@@ -167,13 +167,6 @@ class TestGame(arcade.View):
             meteor.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
             meteor.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
             meteor.angle = random.randint(0, 360)
-            meteor.change_x = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-            ) - METEOR_MOVEMENT_CONSTANT / 2
-
-            meteor.change_y = (
-                random.random() * METEOR_MOVEMENT_CONSTANT
-            ) - METEOR_MOVEMENT_CONSTANT / 2
 
             # stops meteor from spawning within
             # a certain area from the player
@@ -187,12 +180,19 @@ class TestGame(arcade.View):
             ):
                 self.scene["rocks"].append(meteor)
 
-                # creates a mass which is determined by,
-                # overall area size of the sprite
+                # runs function in rock class to find image width and height
+                # calculates mass with a mass constant
+                mass = meteor.meteor_mass(METEOR_MASS)
 
                 # creates an individual body for each,
                 # meteor and adds it into physics engine
-                self.physics_engine.add_sprite(meteor, mass=meteor.mass, elasticity=1.0)
+                self.physics_engine.add_sprite(
+                    meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7
+                )
+                self.rock_body = self.physics_engine.get_physics_object(meteor).body
+
+                rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
+                self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
 
                 break
 
@@ -245,3 +245,5 @@ class TestGame(arcade.View):
         screen_center_y = player_pos[1] - HEIGHT / 2
         player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
+    
+    
