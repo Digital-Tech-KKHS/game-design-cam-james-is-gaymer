@@ -124,9 +124,6 @@ class TestGame(arcade.View):
 
         self.center_camera()
 
-
-
-
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
             self.spawn_enemy()
@@ -191,6 +188,9 @@ class TestGame(arcade.View):
                 )
                 self.rock_body = self.physics_engine.get_physics_object(meteor).body
 
+                #runs speed function in rock class
+                #gives speed in a single variable in a tuple
+                #applies force to specified body 
                 rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
                 self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
 
@@ -245,5 +245,3 @@ class TestGame(arcade.View):
         screen_center_y = player_pos[1] - HEIGHT / 2
         player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
-    
-    
