@@ -188,9 +188,9 @@ class TestGame(arcade.View):
                 )
                 self.rock_body = self.physics_engine.get_physics_object(meteor).body
 
-                #runs speed function in rock class
-                #gives speed in a single variable in a tuple
-                #applies force to specified body 
+                # runs speed function in rock class
+                # gives speed in a single variable in a tuple
+                # applies force to specified body
                 rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
                 self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
 
