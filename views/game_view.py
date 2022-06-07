@@ -28,7 +28,7 @@ METOR_MIN_SPEEED = 10000
 METEOR_MASS = 0.2
 METEOR_FRICTION = 0.2
 
-MAX_SPAWN_TIME = 1
+MAX_SPAWN_TIME = 5
 
 
 class TestGame(arcade.View):
@@ -129,10 +129,11 @@ class TestGame(arcade.View):
             self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
-            self.spawn_time = 0.001
+            self.spawn_time = random.uniform(3, MAX_SPAWN_TIME)
 
         # updates physics engine
         self.physics_engine.step()
+            
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies

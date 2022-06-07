@@ -39,6 +39,7 @@ class Scrap(Debris):
 
 class Rock(Debris):
     def __init__(self, name_file):
+
         self.num = random.randint(1, 5)
         super().__init__(f"meteor_{self.num}")
 
@@ -63,3 +64,4 @@ class Rock(Debris):
         speed_y = random.uniform(min_speed, max_speed)
         speed_vec = (speed_x, speed_y)
         return speed_vec
+
