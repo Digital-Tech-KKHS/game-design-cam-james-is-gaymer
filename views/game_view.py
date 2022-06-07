@@ -1,12 +1,10 @@
 import random
-from turtle import width
 
 import arcade
 
 from views.entity import Rock
 
-from .entity import BasicEnemy
-from .entity import Rock
+from .entity import BasicEnemy, Rock
 
 WIDTH = 1600
 HEIGHT = 800
@@ -77,10 +75,6 @@ class TestGame(arcade.View):
         self.moving = False
         self.moving_angle = False
 
-
-
-        
-
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.scene["player"], self.scene["rocks"]
         )
@@ -129,8 +123,6 @@ class TestGame(arcade.View):
             if self.player_sprite.change_angle > 0:
                 self.player_sprite.change_angle -= PLAYER_ANGLE_DECCELERATION
 
-
-
         # for rock in self.scene["rocks"]:
         # touching = arcade.check_for_collision_with_list(rock, self.scene["rocks"])
 
@@ -140,8 +132,6 @@ class TestGame(arcade.View):
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = random.randint(0, MAX_SPAWN_TIME)
-        
-
 
     def spawn_enemy(self):
         while True:
@@ -173,7 +163,7 @@ class TestGame(arcade.View):
             meteor.center_y = random.uniform(
                 self.player_sprite.center_y - 4000, self.player_sprite.center_y + 4000
             )
-            meteor.angle = random.randint(0,360)
+            meteor.angle = random.randint(0, 360)
             # stops meteor from spawning within a certain area from the player
             if not (
                 self.camera.position[0] - 50
