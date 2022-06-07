@@ -64,4 +64,3 @@ class Rock(Debris):
         speed_y = random.uniform(min_speed, max_speed)
         speed_vec = (speed_x, speed_y)
         return speed_vec
-

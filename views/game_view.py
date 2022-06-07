@@ -133,7 +133,6 @@ class TestGame(arcade.View):
 
         # updates physics engine
         self.physics_engine.step()
-            
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
