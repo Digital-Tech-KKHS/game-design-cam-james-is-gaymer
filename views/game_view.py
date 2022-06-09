@@ -2,9 +2,9 @@ import math
 import random
 
 import arcade
-from pyglet.math import Vec2
 
-from .entity import BasicEnemy, Rock
+
+from .entity import BasicEnemy, Rock, Bullet
 
 WIDTH = 1600
 HEIGHT = 800
@@ -253,24 +253,16 @@ class TestGame(arcade.View):
         self.camera.move_to(player_centered)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        bullet = arcade.Sprite("assets/bullet.png")
+        bullet = Bullet("bullet")
         bullet.center_x = self.player_sprite.center_x
         bullet.center_y = self.player_sprite.center_y
-        self.physics_engine.add_sprite(bullet, mass=10)
+        self.physics_engine.add_sprite(bullet, mass=100)
         bullet_body = self.physics_engine.get_physics_object(bullet).body
-        speed = self.bullet_speed(
-            self.player_sprite.center_x, self.player_sprite.center_y, x, y, 2000
+        speed = bullet.bullet_speed(
+            self.player_sprite.center_x, self.player_sprite.center_y, x, y, 2000, self.camera.position
         )
-        print(self.window._mouse_x)
-        print(self.window._mouse_y)
 
         bullet_body._set_velocity(speed)
         self.scene["bullets"].append(bullet)
 
-    def bullet_speed(self, player_x, player_y, mouse_x, mouse_y, max_speed):
-        player_pos = Vec2(player_x, player_y)
-        mouse_pos = Vec2(mouse_x, mouse_y)
-        mouse_pos += self.camera.position
-        dir = mouse_pos - player_pos
-        vel = dir.from_magnitude(max_speed)
-        return vel
+
