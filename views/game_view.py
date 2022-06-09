@@ -2,6 +2,7 @@ import math
 import random
 
 import arcade
+from pyglet.math import Vec2
 
 from .entity import BasicEnemy, Rock
 
@@ -28,7 +29,7 @@ METOR_MIN_SPEEED = 10000
 METEOR_MASS = 0.2
 METEOR_FRICTION = 0.2
 
-MAX_SPAWN_TIME = 5
+MAX_SPAWN_TIME = 0.001
 
 
 class TestGame(arcade.View):
@@ -61,6 +62,7 @@ class TestGame(arcade.View):
     def setup(self):
 
         self.scene = arcade.Scene()
+        self.scene.add_sprite_list("bullets")
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
@@ -129,7 +131,11 @@ class TestGame(arcade.View):
             self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
-            self.spawn_time = random.uniform(3, MAX_SPAWN_TIME)
+            self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
+
+        # for rock in self.scene["rocks"]:
+        #     if rock.center_x > (self.player_sprite.center_x + 50):
+        #         rock.kill()
 
         # updates physics engine
         self.physics_engine.step()
@@ -245,3 +251,26 @@ class TestGame(arcade.View):
         screen_center_y = player_pos[1] - HEIGHT / 2
         player_centered = screen_center_x, screen_center_y
         self.camera.move_to(player_centered)
+
+    def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        bullet = arcade.Sprite("assets/bullet.png")
+        bullet.center_x = self.player_sprite.center_x
+        bullet.center_y = self.player_sprite.center_y
+        self.physics_engine.add_sprite(bullet, mass=10)
+        bullet_body = self.physics_engine.get_physics_object(bullet).body
+        speed = self.bullet_speed(
+            self.player_sprite.center_x, self.player_sprite.center_y, x, y, 2000
+        )
+        print(self.window._mouse_x)
+        print(self.window._mouse_y)
+
+        bullet_body._set_velocity(speed)
+        self.scene["bullets"].append(bullet)
+
+    def bullet_speed(self, player_x, player_y, mouse_x, mouse_y, max_speed):
+        player_pos = Vec2(player_x, player_y)
+        mouse_pos = Vec2(mouse_x, mouse_y)
+        mouse_pos += self.camera.position
+        dir = mouse_pos - player_pos
+        vel = dir.from_magnitude(max_speed)
+        return vel
