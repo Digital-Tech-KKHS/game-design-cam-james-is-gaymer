@@ -1,10 +1,10 @@
 import math
 import random
+from asyncio.format_helpers import _format_callback_source
 
 import arcade
 
-
-from .entity import BasicEnemy, Rock, Bullet
+from .entity import BasicEnemy, Bullet, Rock
 
 WIDTH = 1600
 HEIGHT = 800
@@ -20,11 +20,11 @@ PLAYER_ACCELERATION = 6000
 PLAYER_DEACCELERATION = 0.02
 PLAYER_MASS = 20
 PLAYER_FRICTION = 0.2
-PLAYER_MAX_SPEED = 215
+PLAYER_MAX_SPEED = 260
 PLAYER_DAMPNING = 0.58
 
 # meteor constants settings for physics engine to use
-METOR_MAX_SPEED = 40000
+METOR_MAX_SPEED = 30000
 METOR_MIN_SPEEED = 10000
 METEOR_MASS = 0.2
 METEOR_FRICTION = 0.2
@@ -126,9 +126,13 @@ class TestGame(arcade.View):
 
         self.center_camera()
 
+        self.meteor_kill()
+
+        self.bullet_kill()
+
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            self.spawn_enemy()
+            # self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
@@ -164,43 +168,48 @@ class TestGame(arcade.View):
     def spawn_meteor(self):
         # retrieves player position to be able to spawn meteors
         player_pos = self.player_body._get_position()
+        if len(self.scene["rocks"]) < 300:
 
-        while True:
-            meteor = Rock("meteor")
-            meteor.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
-            meteor.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
-            meteor.angle = random.randint(0, 360)
-
-            # stops meteor from spawning within
-            # a certain area from the player
-            if not (
-                self.camera.position[0] - 50
-                < meteor.center_x
-                < self.camera.position[0] + WIDTH + 50
-                and self.camera.position[1] - 50
-                < meteor.center_y
-                < self.camera.position[1] + HEIGHT + 50
-            ):
-                self.scene["rocks"].append(meteor)
-
-                # runs function in rock class to find image width and height
-                # calculates mass with a mass constant
-                mass = meteor.meteor_mass(METEOR_MASS)
-
-                # creates an individual body for each,
-                # meteor and adds it into physics engine
-                self.physics_engine.add_sprite(
-                    meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7
+            while True:
+                meteor = Rock("meteor")
+                meteor.center_x = random.uniform(
+                    player_pos[0] - 4100, player_pos[0] + 4100
                 )
-                self.rock_body = self.physics_engine.get_physics_object(meteor).body
+                meteor.center_y = random.uniform(
+                    player_pos[1] - 4100, player_pos[1] + 4100
+                )
+                meteor.angle = random.randint(0, 360)
 
-                # runs speed function in rock class
-                # gives speed in a single variable in a tuple
-                # applies force to specified body
-                rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
-                self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
+                # stops meteor from spawning within
+                # a certain area from the player
+                if not (
+                    self.camera.position[0] - 50
+                    < meteor.center_x
+                    < self.camera.position[0] + WIDTH + 50
+                    and self.camera.position[1] - 50
+                    < meteor.center_y
+                    < self.camera.position[1] + HEIGHT + 50
+                ):
+                    self.scene["rocks"].append(meteor)
 
-                break
+                    # runs function in rock class to find image width and height
+                    # calculates mass with a mass constant
+                    mass = meteor.meteor_mass(METEOR_MASS)
+
+                    # creates an individual body for each,
+                    # meteor and adds it into physics engine
+                    self.physics_engine.add_sprite(
+                        meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7
+                    )
+                    self.rock_body = self.physics_engine.get_physics_object(meteor).body
+
+                    # runs speed function in rock class
+                    # gives speed in a single variable in a tuple
+                    # applies force to specified body
+                    rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
+                    self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
+
+                    break
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
@@ -259,10 +268,48 @@ class TestGame(arcade.View):
         self.physics_engine.add_sprite(bullet, mass=100)
         bullet_body = self.physics_engine.get_physics_object(bullet).body
         speed = bullet.bullet_speed(
-            self.player_sprite.center_x, self.player_sprite.center_y, x, y, 2000, self.camera.position
+            self.player_sprite.center_x,
+            self.player_sprite.center_y,
+            x,
+            y,
+            2000,
+            self.camera.position,
         )
 
         bullet_body._set_velocity(speed)
         self.scene["bullets"].append(bullet)
 
+    def meteor_kill(self):
+        player_pos = self.player_body._get_position()
+        for rock in self.scene["rocks"]:
+            rock_x = False
+            rock_y = False
+            if rock.center_x >= (player_pos[0] + 4100) or rock.center_x <= (
+                player_pos[0] - 4200
+            ):
+                rock_x = True
+            if rock.center_y >= (player_pos[1] + 4100) or rock.center_y <= (
+                player_pos[1] - 4200
+            ):
+                rock_y = True
+            if rock_x or rock_y:
+                rock.kill()
 
+    def bullet_kill(self):
+        player_pos = self.player_body._get_position()
+        for bullet in self.scene["bullets"]:
+            collision = arcade.check_for_collision_with_list(
+                bullet, self.scene["rocks"]
+            )
+            for b in collision:
+                bullet.kill()
+
+            if bullet.center_x >= (player_pos[0] + WIDTH) or bullet.center_x <= (
+                player_pos[0] - WIDTH
+            ):
+                bullet.kill()
+
+            if bullet.center_y >= (player_pos[1] + HEIGHT) or bullet.center_y <= (
+                player_pos[1] - HEIGHT
+            ):
+                bullet.kill()
