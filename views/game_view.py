@@ -1,10 +1,8 @@
 import math
 import random
-from asyncio.format_helpers import _format_callback_source
-
 import arcade
 
-from .entity import BasicEnemy, Bullet, Rock
+from .entity import BasicEnemy, Bullet, Rock, Player
 
 WIDTH = 1600
 HEIGHT = 800
@@ -23,13 +21,23 @@ PLAYER_FRICTION = 0.2
 PLAYER_MAX_SPEED = 260
 PLAYER_DAMPNING = 0.58
 
+
+ZOMBIE_MASS = 20
+ZOMBIE_FRICTION = 0.2
+ZOMBIE_MAX_SPEED = 260
+ZOMBIE_DAMPNING = 0.58
+
 # meteor constants settings for physics engine to use
 METOR_MAX_SPEED = 30000
 METOR_MIN_SPEEED = 10000
 METEOR_MASS = 0.2
 METEOR_FRICTION = 0.2
 
+SPAWN_MAX = 4100
+
 MAX_SPAWN_TIME = 0.001
+
+BULET_MAX_SPEED = 2000
 
 
 class TestGame(arcade.View):
@@ -76,21 +84,16 @@ class TestGame(arcade.View):
 
         self.camera = arcade.Camera(WIDTH, HEIGHT)
 
-        image_source = "assets/player_idle.png"
-        self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCAILING)
-        self.player_sprite.center_x = 500
-        self.player_sprite.center_y = 400
+        
+        self.player_sprite = Player("player_idle")
+        self.player_sprite.center_x = self.player_sprite.x
+        self.player_sprite.center_y = self.player_sprite.y
         self.scene.add_sprite("player", self.player_sprite)
 
         self.accelerating_up = False
         self.accelerating_down = False
         self.accelerating_left = False
         self.accelerating_right = False
-
-        enemy = BasicEnemy("enemy")
-        enemy.center_x = self.player_sprite.center_x + 50
-        enemy.center_y = self.player_sprite.center_y + 50
-        self.scene["zombie"].append(enemy)
 
         self.spawn_time = 0.001
         self.time_between_spawn = 0
@@ -147,23 +150,32 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
-
-        while True:
-            enemy = BasicEnemy("enemy")
-            enemy.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
-            enemy.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
-            # stops enemy from spawning within
-            # a certain area from the player
-            if not (
-                self.camera.position[0] - 50
-                < enemy.center_x
-                < self.camera.position[0] + WIDTH + 50
-                and self.camera.position[1] - 50
-                < enemy.center_y
-                < self.camera.position[1] + HEIGHT + 50
-            ):
-                self.scene["zombie"].append(enemy)
-                break
+        if len(self.scenes["Zombie"]) > 50:
+            while True:
+                enemy = BasicEnemy("enemy")
+                enemy.center_x = random.uniform(player_pos[0] - SPAWN_MAX, player_pos[0] + SPAWN_MAX)
+                enemy.center_y = random.uniform(player_pos[1] - SPAWN_MAX, player_pos[1] + SPAWN_MAX)
+                # stops enemy from spawning within
+                # a certain area from the player
+                if not (
+                    self.camera.position[0] - 50
+                    < enemy.center_x
+                    < self.camera.position[0] + WIDTH + 50
+                    and self.camera.position[1] - 50
+                    < enemy.center_y
+                    < self.camera.position[1] + HEIGHT + 50
+                ):
+                    
+                    self.physics_engine.add_sprite(
+                    self.player_sprite,
+                    mass=ZOMBIE_MASS
+                    friction=ZOMBIE_FRICTION
+                    elasticity=0.4,
+                    moment_of_inertia=math.inf,
+                    damping=PLAYER_DAMPNING,
+                    )
+                    self.scene["zombie"].append(enemy)
+                    break
 
     def spawn_meteor(self):
         # retrieves player position to be able to spawn meteors
@@ -173,10 +185,10 @@ class TestGame(arcade.View):
             while True:
                 meteor = Rock("meteor")
                 meteor.center_x = random.uniform(
-                    player_pos[0] - 4100, player_pos[0] + 4100
+                    player_pos[0] - SPAWN_MAX, player_pos[0] + SPAWN_MAX
                 )
                 meteor.center_y = random.uniform(
-                    player_pos[1] - 4100, player_pos[1] + 4100
+                    player_pos[1] - SPAWN_MAX, player_pos[1] + SPAWN_MAX
                 )
                 meteor.angle = random.randint(0, 360)
 
@@ -190,8 +202,6 @@ class TestGame(arcade.View):
                     < meteor.center_y
                     < self.camera.position[1] + HEIGHT + 50
                 ):
-                    self.scene["rocks"].append(meteor)
-
                     # runs function in rock class to find image width and height
                     # calculates mass with a mass constant
                     mass = meteor.meteor_mass(METEOR_MASS)
@@ -207,7 +217,8 @@ class TestGame(arcade.View):
                     # gives speed in a single variable in a tuple
                     # applies force to specified body
                     rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
-                    self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
+                    self.rock_body.set_velocity(rock_speed)
+                    self.scene["rocks"].append(meteor)
 
                     break
 
@@ -272,7 +283,7 @@ class TestGame(arcade.View):
             self.player_sprite.center_y,
             x,
             y,
-            2000,
+            BULLET_MAX_SPEED,
             self.camera.position,
         )
 
