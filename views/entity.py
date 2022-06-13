@@ -82,9 +82,4 @@ class Bullet(Entity):
         return vel
     
     
-    class Player(Entity):
-        def __init__(self, name_file):
-            super().__init__(name_file="player_idle")
-            
-            x = 500
-            y = 400
+
