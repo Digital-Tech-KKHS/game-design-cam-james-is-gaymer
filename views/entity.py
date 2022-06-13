@@ -80,6 +80,3 @@ class Bullet(Entity):
         dir = mouse_pos - player_pos
         vel = dir.from_magnitude(max_speed)
         return vel
-    
-    
-
