@@ -1,7 +1,6 @@
 import math
 import random
 
-
 import arcade
 
 from .entity import BasicEnemy, Bullet, Rock
@@ -184,7 +183,7 @@ class TestGame(arcade.View):
                 # a certain area from the player
                 if not (
                     self.camera.position[0] - 50
-               < meteor.center_x
+                    < meteor.center_x
                     < self.camera.position[0] + WIDTH + 50
                     and self.camera.position[1] - 50
                     < meteor.center_y
@@ -290,7 +289,6 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 rock.kill()
-
 
     def bullet_kill(self):
         player_pos = self.player_body._get_position()
