@@ -1,6 +1,6 @@
 import math
 import random
-from asyncio.format_helpers import _format_callback_source
+
 
 import arcade
 
@@ -184,7 +184,7 @@ class TestGame(arcade.View):
                 # a certain area from the player
                 if not (
                     self.camera.position[0] - 50
-                    < meteor.center_x
+               < meteor.center_x
                     < self.camera.position[0] + WIDTH + 50
                     and self.camera.position[1] - 50
                     < meteor.center_y
@@ -282,18 +282,15 @@ class TestGame(arcade.View):
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
         for rock in self.scene["rocks"]:
-            rock_x = False
-            rock_y = False
             if rock.center_x >= (player_pos[0] + 4100) or rock.center_x <= (
                 player_pos[0] - 4200
             ):
-                rock_x = True
+                rock.kill()
             if rock.center_y >= (player_pos[1] + 4100) or rock.center_y <= (
                 player_pos[1] - 4200
             ):
-                rock_y = True
-            if rock_x or rock_y:
                 rock.kill()
+
 
     def bullet_kill(self):
         player_pos = self.player_body._get_position()
@@ -303,12 +300,10 @@ class TestGame(arcade.View):
             )
             for b in collision:
                 bullet.kill()
-
             if bullet.center_x >= (player_pos[0] + WIDTH) or bullet.center_x <= (
                 player_pos[0] - WIDTH
             ):
                 bullet.kill()
-
             if bullet.center_y >= (player_pos[1] + HEIGHT) or bullet.center_y <= (
                 player_pos[1] - HEIGHT
             ):
