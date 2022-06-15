@@ -20,25 +20,26 @@ class Vehicle(arcade.Sprite):
         self.center_x = random.randint(0, 800)
         self.center_y = random.randint(0, 800)
         self.vel = Vec2()
-        self.acc = Vec2()
+        self.net = Vec2()
         self.forces = []
-        self.max_speed = 200
-        self.max_force = 100
+        self.max_speed = PLAYER_MAX_SPEED
+        self.max_force = 10000
         self.body: arcade.PymunkPhysicsObject = None
 
-    def update(self):
-        self.acc = sum(self.forces).clamp(-self.max_force, self.max_force)
-        self.body.apply_force_at_world_point(self.acc, (self.center_x,self.center_y))
-        vel = Vec2(self.body.velocity.x)
-        self.body.angle = 
-        # self.vel += self.acc
-        # self.vel = self.vel.clamp(-self.max_speed, self.max_speed)
-        # self.pos += self.vel
+    def update(self, physics_engine:arcade.PymunkPhysicsEngine):
+        self.physics_body = physics_engine.get_physics_object(self).body
+        self.physics_body.angular_velocity *= 0.7
+        self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
+        self.physics_body.apply_force_at_world_point(self.net, (self.center_x,self.center_y))
+        vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
+        self.physics_body.angle = Vec2(
+            self.physics_body.velocity[0], 
+            self.physics_body.velocity[1]
+        ).heading - math.pi/2
+
         self.forces = []
-        self.acc = 0
-        # self.center_x = self.pos[0]
-        # self.center_y = self.pos[1]
-        # self.angle = math.degrees(self.vel.heading) - 90
+        self.net = 0
+
 
     def seek(self, target: Vec2):
         ideal = target - Vec2(self.center_x, self.center_y)
@@ -54,6 +55,10 @@ class Vehicle(arcade.Sprite):
             force = ideal - self.vel
             force = force.clamp(-self.max_force, self.max_force)
             self.forces.append(force)
+
+    @property
+    def pos(self):
+        return Vec2(self.center_x, self.center_y)
 
 
 class Game(arcade.Window):
@@ -82,7 +87,7 @@ class Game(arcade.Window):
             self.vehicle,
             mass=PLAYER_MASS,
             friction=PLAYER_FRICTION,
-            elasticity=0.4,
+            elasticity=0.99,
             moment_of_inertia=20,
             max_velocity=PLAYER_MAX_SPEED,
             damping=PLAYER_DAMPNING,
@@ -104,11 +109,11 @@ class Game(arcade.Window):
     def update(self, delta_time: float):
         for vehicle in self.scene["vehicle"]:
             vehicle.seek(Vec2(self._mouse_x, self._mouse_y))
-            vehicle.update()
+            vehicle.update(self.physics_engine)
             # stops vehicle from fleeing from itself
-            #for other in self.scene["vehicle"]:
-             #   if vehicle is not other:
-              #      vehicle.flee(other.pos, 150)
+            for other in self.scene["vehicle"]:
+                if vehicle is not other:
+                    vehicle.flee(other.pos, 50)
 
         self.physics_engine.step()
 
