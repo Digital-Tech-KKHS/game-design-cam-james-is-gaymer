@@ -2,6 +2,7 @@ import random
 
 import arcade
 from PIL import Image
+from pyglet.math import Vec2
 
 # from views.game_view import METEOR_MASS
 
@@ -64,3 +65,18 @@ class Rock(Debris):
         speed_y = random.uniform(min_speed, max_speed)
         speed_vec = (speed_x, speed_y)
         return speed_vec
+
+
+class Bullet(Entity):
+    def __init__(self, name_file):
+        super().__init__(name_file="bullet")
+
+    def bullet_speed(
+        self, player_x, player_y, mouse_x, mouse_y, max_speed, pos_correction
+    ):
+        player_pos = Vec2(player_x, player_y)
+        mouse_pos = Vec2(mouse_x, mouse_y)
+        mouse_pos += pos_correction
+        dir = mouse_pos - player_pos
+        vel = dir.from_magnitude(max_speed)
+        return vel
