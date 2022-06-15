@@ -13,10 +13,11 @@ PLAYER_DAMPNING = 0.58
 
 DEFAULT_DAMPNING = 1.0
 
+
 class Vehicle(arcade.Sprite):
     def __init__(self, pos):
         super().__init__(":resources:images/space_shooter/playerShip1_orange.png", 0.3)
-        #self.pos = Vec2(random.randint(0, 800), random.randint(0, 800))
+        # self.pos = Vec2(random.randint(0, 800), random.randint(0, 800))
         self.center_x = random.randint(0, 800)
         self.center_y = random.randint(0, 800)
         self.vel = Vec2()
@@ -26,20 +27,21 @@ class Vehicle(arcade.Sprite):
         self.max_force = 10000
         self.body: arcade.PymunkPhysicsObject = None
 
-    def update(self, physics_engine:arcade.PymunkPhysicsEngine):
+    def update(self, physics_engine: arcade.PymunkPhysicsEngine):
         self.physics_body = physics_engine.get_physics_object(self).body
         self.physics_body.angular_velocity *= 0.7
         self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
-        self.physics_body.apply_force_at_world_point(self.net, (self.center_x,self.center_y))
+        self.physics_body.apply_force_at_world_point(
+            self.net, (self.center_x, self.center_y)
+        )
         vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
-        self.physics_body.angle = Vec2(
-            self.physics_body.velocity[0], 
-            self.physics_body.velocity[1]
-        ).heading - math.pi/2
+        self.physics_body.angle = (
+            Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
+            - math.pi / 2
+        )
 
         self.forces = []
         self.net = 0
-
 
     def seek(self, target: Vec2):
         ideal = target - Vec2(self.center_x, self.center_y)
@@ -93,11 +95,7 @@ class Game(arcade.Window):
             damping=PLAYER_DAMPNING,
         )
 
-        self.vehicle.body = self.physics_engine.get_physics_object(
-            self.vehicle
-        ).body
-
-        
+        self.vehicle.body = self.physics_engine.get_physics_object(self.vehicle).body
 
     def on_draw(self):
         self.clear()
