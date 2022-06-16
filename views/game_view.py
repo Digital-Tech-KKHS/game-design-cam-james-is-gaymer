@@ -293,21 +293,26 @@ class TestGame(arcade.View):
 
         if self.gun_select == 2:
             image_source = "assets\mining_laser.png"
-            correction_pos = 0
+            correction_pos_x = 0
+            correction_pos_y = 0
             pos = (self.player_sprite.center_x, self.player_sprite.center_y)
             image_size = self.laser_image_size()
+            diff_y = y - self.player_sprite.center_y
+            diff_x = x - self.player_sprite.center_x
+            diff_y += self.camera.position[1]
+            diff_x += self.camera.position[0]
+            angle = math.degrees(math.atan2(diff_y, diff_x)) + 90
             dir = self.laser_dir(self.player_sprite.center_x, self.player_sprite.center_y, x, y, self.camera.position)
-            for laser in range(1):
+            for laser in range(50):
                 laser = arcade.Sprite(image_source)
-                laser.center_x = pos[0] + correction_pos
-                laser.center_y = pos[1] 
-                correction_pos += image_size[0]
-                diff_y = y - self.player_sprite.center_y
-                diff_x = y - self.player_sprite.center_x
-                angle = math.atan2(diff_y, diff_x)
+                laser.center_x = pos[0] + correction_pos_x
+                laser.center_y = pos[1] + correction_pos_y
+                correction_pos_x += image_size[0]
+                correction_pos_y += image_size[1]
+ 
                         
-                
-                laser.angle = math.degrees(angle)            
+                if len(self.scene["mining_laser"]) == 1:
+                    laser.angle = angle          
                                         
                 
                 self.scene["mining_laser"].append(laser)
