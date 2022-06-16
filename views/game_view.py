@@ -1,9 +1,13 @@
+from email.mime import image
+import arcade
 import math
 import random
 
-import arcade
+
 
 from .entity import BasicEnemy, Bullet, Rock
+from PIL import Image
+from pyglet.math import Vec2
 
 WIDTH = 1600
 HEIGHT = 800
@@ -54,6 +58,8 @@ class TestGame(arcade.View):
         self.spawn_time = None
         self.time_between_spawn = None
 
+        self.gun_select = None
+
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -62,6 +68,7 @@ class TestGame(arcade.View):
 
         self.scene = arcade.Scene()
         self.scene.add_sprite_list("bullets")
+        self.scene.add_sprite_list("mining_laser")
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
@@ -110,6 +117,8 @@ class TestGame(arcade.View):
         self.player_body = self.physics_engine.get_physics_object(
             self.player_sprite
         ).body
+
+        self.gun_select = 1
 
     def on_draw(self):
         self.clear()
@@ -219,6 +228,10 @@ class TestGame(arcade.View):
             self.accelerating_right = True
         if key == arcade.key.A:
             self.accelerating_left = True
+        if key == arcade.key.KEY_1:
+            self.gun_select = 1
+        if key == arcade.key.KEY_2:
+            self.gun_select = 2
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
@@ -261,22 +274,47 @@ class TestGame(arcade.View):
         self.camera.move_to(player_centered)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        bullet = Bullet("bullet")
-        bullet.center_x = self.player_sprite.center_x
-        bullet.center_y = self.player_sprite.center_y
-        self.physics_engine.add_sprite(bullet, mass=100)
-        bullet_body = self.physics_engine.get_physics_object(bullet).body
-        speed = bullet.bullet_speed(
-            self.player_sprite.center_x,
-            self.player_sprite.center_y,
-            x,
-            y,
-            2000,
-            self.camera.position,
-        )
+        if self.gun_select == 1:
+            bullet = Bullet("bullet")
+            bullet.center_x = self.player_sprite.center_x
+            bullet.center_y = self.player_sprite.center_y
+            self.physics_engine.add_sprite(bullet, mass=100)
+            bullet_body = self.physics_engine.get_physics_object(bullet).body
+            speed = bullet.bullet_speed(
+                self.player_sprite.center_x,
+                self.player_sprite.center_y,
+                x,
+                y,
+                2000,
+                self.camera.position,
+            )
+            bullet_body._set_velocity(speed)
+            self.scene["bullets"].append(bullet)
 
-        bullet_body._set_velocity(speed)
-        self.scene["bullets"].append(bullet)
+        if self.gun_select == 2:
+            image_source = "assets\mining_laser.png"
+            correction_pos = 0
+            pos = (self.player_sprite.center_x, self.player_sprite.center_y)
+            image_size = self.laser_image_size()
+            dir = self.laser_dir(self.player_sprite.center_x, self.player_sprite.center_y, x, y, self.camera.position)
+            for laser in range(1):
+                laser = arcade.Sprite(image_source)
+                laser.center_x = pos[0] + correction_pos
+                laser.center_y = pos[1] 
+                correction_pos += image_size[0]
+                diff_y = y - self.player_sprite.center_y
+                diff_x = y - self.player_sprite.center_x
+                angle = math.atan2(diff_y, diff_x)
+                        
+                
+                laser.angle = math.degrees(angle)            
+                                        
+                
+                self.scene["mining_laser"].append(laser)
+
+                
+
+
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
@@ -306,3 +344,18 @@ class TestGame(arcade.View):
                 player_pos[1] - HEIGHT
             ):
                 bullet.kill()
+
+    def laser_dir(
+        self, player_x, player_y, mouse_x, mouse_y, pos_correction
+    ):
+        player_pos = Vec2(player_x, player_y)
+        mouse_pos = Vec2(mouse_x, mouse_y)
+        mouse_pos += pos_correction
+        dir = mouse_pos - player_pos
+        return dir
+
+    def laser_image_size(self):
+        image = Image.open(f"assets/mining_laser.png")
+        rock_width, rock_height = image.size
+        image = (rock_width, rock_height)
+        return image
