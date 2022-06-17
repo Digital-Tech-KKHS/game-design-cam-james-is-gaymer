@@ -1,13 +1,12 @@
-from email.mime import image
-import arcade
 import math
 import random
+from email.mime import image
 
-
-
-from .entity import BasicEnemy, Bullet, Rock
+import arcade
 from PIL import Image
 from pyglet.math import Vec2
+
+from .entity import BasicEnemy, Bullet, Rock
 
 WIDTH = 1600
 HEIGHT = 800
@@ -301,24 +300,21 @@ class TestGame(arcade.View):
             diff_x += self.camera.position[0]
             angle_radians = math.atan2(diff_y, diff_x)
             angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
-            dir = self.laser_dir(self.player_sprite.center_x, self.player_sprite.center_y, x, y, self.camera.position)
+            dir = self.laser_dir(
+                self.player_sprite.center_x,
+                self.player_sprite.center_y,
+                x,
+                y,
+                self.camera.position,
+            )
             for i in range(10):
                 hypot = i * 16
                 laser = arcade.Sprite(image_source)
-                laser.center_x = pos[0] + (hypot*math.cos(angle_radians)) 
-                laser.center_y = pos[1] + (hypot*math.sin(angle_radians))
+                laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
+                laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
                 laser.angle = angle_degrees
-                
- 
-                        
-         
-                                        
-                
+
                 self.scene["mining_laser"].append(laser)
-
-                
-
-
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
@@ -349,9 +345,7 @@ class TestGame(arcade.View):
             ):
                 bullet.kill()
 
-    def laser_dir(
-        self, player_x, player_y, mouse_x, mouse_y, pos_correction
-    ):
+    def laser_dir(self, player_x, player_y, mouse_x, mouse_y, pos_correction):
         player_pos = Vec2(player_x, player_y)
         mouse_pos = Vec2(mouse_x, mouse_y)
         mouse_pos += pos_correction
