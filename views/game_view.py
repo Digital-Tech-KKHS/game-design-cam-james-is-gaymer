@@ -1,6 +1,6 @@
 import math
 import random
-
+from pyglet.math import Vec2
 import arcade
 
 from .entity import BasicEnemy, Rock
@@ -85,10 +85,6 @@ class TestGame(arcade.View):
         self.accelerating_left = False
         self.accelerating_right = False
 
-        enemy = BasicEnemy("enemy")
-        enemy.center_x = self.player_sprite.center_x + 50
-        enemy.center_y = self.player_sprite.center_y + 50
-        self.scene["zombie"].append(enemy)
 
         self.spawn_time = 0.001
         self.time_between_spawn = 0
@@ -121,6 +117,9 @@ class TestGame(arcade.View):
         # self.scene.update()
 
         self.player_movement()
+        for enemy in self.scene["zombie"]:
+            enemy.seek(Vec2(self.player_sprite.center_x, self.player_sprite.center_y))
+            enemy.update()
 
         self.center_camera()
 
@@ -153,6 +152,9 @@ class TestGame(arcade.View):
                 < self.camera.position[1] + HEIGHT + 50
             ):
                 self.scene["zombie"].append(enemy)
+
+                self.physics_engine.add_sprite(enemy,PLAYER_MASS, PLAYER_FRICTION, 0.7)
+                self.enemy_body = self.physics_engine.get_physics_object(enemy).body
                 break
 
     def spawn_meteor(self):

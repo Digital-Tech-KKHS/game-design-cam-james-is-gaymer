@@ -1,11 +1,14 @@
 import random
-
+from pyglet.math import Vec2
+import math
 import arcade
 from PIL import Image
 
-# from views.game_view import METEOR_MASS
+
 
 ENEMY_SCALEING = 2
+
+MAX_SPEED = 100
 
 
 class Entity(arcade.Sprite):
@@ -15,15 +18,7 @@ class Entity(arcade.Sprite):
         super().__init__(main_path)
 
 
-class Enemy(Entity):
-    def __init__(self, name_file):
-        super().__init__(name_file)
-        self.scale = ENEMY_SCALEING
 
-
-class BasicEnemy(Enemy):
-    def __init__(self, name_file):
-        super().__init__("enemy_idle")
 
 
 class Debris(Entity):
@@ -64,3 +59,62 @@ class Rock(Debris):
         speed_y = random.uniform(min_speed, max_speed)
         speed_vec = (speed_x, speed_y)
         return speed_vec
+
+
+class Vehicle(Entity):
+    def __init__(self, name_file):
+        super().__init__(name_file)
+        self.center_x = random.randint(0, 800)
+        self.center_y = random.randint(0, 800)
+        self.vel = Vec2()
+        self.net = Vec2()
+        self.forces = []
+        self.max_speed = MAX_SPEED
+        self.max_force = 10000
+        self.body: arcade.PymunkPhysicsObject = None
+
+    def update(self):
+        physics_engine = self.physics_engines[0]
+        self.physics_body = physics_engine.get_physics_object(self).body
+        self.physics_body.angular_velocity *= 0.7
+        self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
+        self.physics_body.apply_force_at_world_point(
+            self.net, (self.center_x, self.center_y)
+        )
+        vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
+        self.physics_body.angle = (
+            Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
+        )
+
+        self.forces = []
+        self.net = 0
+
+    def seek(self, target: Vec2):
+        ideal = target - Vec2(self.center_x, self.center_y)
+        ideal = ideal.from_magnitude(self.max_speed)
+        force = ideal - self.vel
+        force = force.clamp(-self.max_force, self.max_force)
+        self.forces.append(force)
+
+    def flee(self, target: Vec2, radius):
+        if self.pos.distance(target) < radius:
+            ideal = -(target - self.pos)
+            ideal = ideal.from_magnitude(self.max_speed)
+            force = ideal - self.vel
+            force = force.clamp(-self.max_force, self.max_force)
+            self.forces.append(force)
+
+    @property
+    def pos(self):
+        return Vec2(self.center_x, self.center_y)
+
+
+class Enemy(Vehicle):
+    def __init__(self, name_file):
+        super().__init__(name_file)
+        self.scale = ENEMY_SCALEING
+
+
+class BasicEnemy(Enemy):
+    def __init__(self, name_file):
+        super().__init__("enemy_idle")
