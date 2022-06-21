@@ -139,8 +139,8 @@ class TestGame(arcade.View):
 
         while True:
             enemy = BasicEnemy("enemy")
-            enemy.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
-            enemy.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
+            enemy.center_x = random.uniform(player_pos[0] - 1000, player_pos[0] + 1000)
+            enemy.center_y = random.uniform(player_pos[1] - 1000, player_pos[1] + 1000)
             # stops enemy from spawning within
             # a certain area from the player
             if not (
