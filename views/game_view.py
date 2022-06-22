@@ -2,8 +2,8 @@ import math
 import random
 from email.mime import image
 
+from pyglet.math import Vec2
 import arcade
-from PIL import Image
 from pyglet.math import Vec2
 
 from .entity import BasicEnemy, Bullet, Rock
@@ -30,6 +30,7 @@ METOR_MAX_SPEED = 30000
 METOR_MIN_SPEEED = 10000
 METEOR_MASS = 0.2
 METEOR_FRICTION = 0.2
+METEOR_HEALTH_CONSTANT = 0.2
 
 MAX_SPAWN_TIME = 0.001
 
@@ -58,6 +59,7 @@ class TestGame(arcade.View):
         self.time_between_spawn = None
 
         self.gun_select = None
+        self.laser_on = False
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -92,10 +94,6 @@ class TestGame(arcade.View):
         self.accelerating_left = False
         self.accelerating_right = False
 
-        enemy = BasicEnemy("enemy")
-        enemy.center_x = self.player_sprite.center_x + 50
-        enemy.center_y = self.player_sprite.center_y + 50
-        self.scene["zombie"].append(enemy)
 
         self.spawn_time = 0.001
         self.time_between_spawn = 0
@@ -128,8 +126,12 @@ class TestGame(arcade.View):
 
     def on_update(self, delta_time):
         # self.scene.update()
+        self.scene['mining_laser'].clear()
 
         self.player_movement()
+        for enemy in self.scene["zombie"]:
+            enemy.seek(Vec2(self.player_sprite.center_x, self.player_sprite.center_y))
+            enemy.update()
 
         self.center_camera()
 
@@ -139,7 +141,7 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            # self.spawn_enemy()
+            self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
@@ -150,27 +152,32 @@ class TestGame(arcade.View):
 
         # updates physics engine
         self.physics_engine.step()
+        if self.laser_on:
+            self.fire_laser()
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
+        if len(self.scene["zombie"]) < 50:
+            while True:
+                enemy = BasicEnemy("enemy")
+                enemy.center_x = random.uniform(player_pos[0] - 1000, player_pos[0] + 1000)
+                enemy.center_y = random.uniform(player_pos[1] - 1000, player_pos[1] + 1000)
+                # stops enemy from spawning within
+                # a certain area from the player
+                if not (
+                    self.camera.position[0] - 50
+                    < enemy.center_x
+                    < self.camera.position[0] + WIDTH + 50
+                    and self.camera.position[1] - 50
+                    < enemy.center_y
+                    < self.camera.position[1] + HEIGHT + 50
+                ):
+                    self.scene["zombie"].append(enemy)
 
-        while True:
-            enemy = BasicEnemy("enemy")
-            enemy.center_x = random.uniform(player_pos[0] - 4000, player_pos[0] + 4000)
-            enemy.center_y = random.uniform(player_pos[1] - 4000, player_pos[1] + 4000)
-            # stops enemy from spawning within
-            # a certain area from the player
-            if not (
-                self.camera.position[0] - 50
-                < enemy.center_x
-                < self.camera.position[0] + WIDTH + 50
-                and self.camera.position[1] - 50
-                < enemy.center_y
-                < self.camera.position[1] + HEIGHT + 50
-            ):
-                self.scene["zombie"].append(enemy)
-                break
+                    self.physics_engine.add_sprite(enemy,PLAYER_MASS, PLAYER_FRICTION, 0.7)
+                    self.enemy_body = self.physics_engine.get_physics_object(enemy).body
+                    break
 
     def spawn_meteor(self):
         # retrieves player position to be able to spawn meteors
@@ -291,30 +298,40 @@ class TestGame(arcade.View):
             self.scene["bullets"].append(bullet)
 
         if self.gun_select == 2:
-            image_source = "assets\mining_laser.png"
-            pos = (self.player_sprite.center_x, self.player_sprite.center_y)
-            image_size = self.laser_image_size()
-            diff_y = y - self.player_sprite.center_y
-            diff_x = x - self.player_sprite.center_x
-            diff_y += self.camera.position[1]
-            diff_x += self.camera.position[0]
-            angle_radians = math.atan2(diff_y, diff_x)
-            angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
-            dir = self.laser_dir(
-                self.player_sprite.center_x,
-                self.player_sprite.center_y,
-                x,
-                y,
-                self.camera.position,
-            )
-            for i in range(10):
-                hypot = i * 16
-                laser = arcade.Sprite(image_source)
-                laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
-                laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
-                laser.angle = angle_degrees
+            self.laser_on = True
+        
+    def fire_laser(self):
+        x = self.window._mouse_x
+        y = self.window._mouse_y
+        image_source1 = "assets\mining_laser.png"
+        image_source2 = "assets\mining_laser_contact.png"
+        pos = (self.player_sprite.center_x, self.player_sprite.center_y)
+        diff_y = y - self.player_sprite.center_y
+        diff_x = x - self.player_sprite.center_x
+        diff_y += self.camera.position[1]
+        diff_x += self.camera.position[0]
+        angle_radians = math.atan2(diff_y, diff_x)
+        angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
+        for i in range(50):
+            hypot = i * 16
+            laser = arcade.Sprite(image_source1)
+            laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
+            laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
+            laser.angle = angle_degrees
+            laser.alpha = 255 - i * (255/50)
+            self.scene["mining_laser"].append(laser)
+            if arcade.check_for_collision_with_list(laser, self.scene['rocks']):
+                contact = arcade.Sprite(image_source2)
+                contact.center_x = laser.center_x + (5 * math.cos(angle_radians))
+                contact.center_y = laser.center_y + (5 * math.sin(angle_radians))
+                contact.angle = angle_degrees
+                contact.alpha = laser.alpha
+                self.scene["mining_laser"].append(contact)
+                break 
 
-                self.scene["mining_laser"].append(laser)
+    def on_mouse_release(self, *args, **kwargs):
+        self.laser_on = False
+
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
@@ -345,15 +362,14 @@ class TestGame(arcade.View):
             ):
                 bullet.kill()
 
-    def laser_dir(self, player_x, player_y, mouse_x, mouse_y, pos_correction):
-        player_pos = Vec2(player_x, player_y)
-        mouse_pos = Vec2(mouse_x, mouse_y)
-        mouse_pos += pos_correction
-        dir = mouse_pos - player_pos
-        return dir
-
-    def laser_image_size(self):
-        image = Image.open(f"assets/mining_laser.png")
-        rock_width, rock_height = image.size
-        image = (rock_width, rock_height)
-        return image
+    def enemy_kill(self):
+        player_pos = self.player_body._get_position()
+        for enemy in self.scene["zombie"]:
+            if enemy.center_x >= (player_pos[0] + 4100) or enemy.center_x <= (
+                player_pos[0] - 4200
+            ):
+                enemy.kill()
+            if enemy.center_y >= (player_pos[1] + 4100) or enemy.center_y <= (
+                player_pos[1] - 4200
+            ):
+                enemy.kill()
