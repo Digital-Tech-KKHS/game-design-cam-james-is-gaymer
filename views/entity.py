@@ -10,7 +10,7 @@ from const import *
 
 ENEMY_SCALEING = 2
 
-MAX_SPEED = 6000
+MAX_SPEED = 1000
 
 
 class Entity(arcade.Sprite):

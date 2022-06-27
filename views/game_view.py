@@ -1,6 +1,7 @@
 import math
 import random
 from email.mime import image
+from turtle import heading
 
 from pyglet.math import Vec2
 import arcade
@@ -115,6 +116,9 @@ class TestGame(arcade.View):
         for enemy in self.scene["zombie"]:
             enemy.seek(Vec2(self.player_sprite.center_x, self.player_sprite.center_y))
             enemy.update()
+            for other in self.scene["zombie"]:
+                if enemy is not other:
+                    enemy.flee(other.pos, 150)
 
         self.center_camera()
 
@@ -124,7 +128,7 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            #self.spawn_enemy()
+            self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
@@ -141,7 +145,7 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
-        if len(self.scene["zombie"]) < 150:
+        if len(self.scene["zombie"]) < 50:
             while True:
                 enemy = BasicEnemy("enemy")
                 enemy.center_x = random.uniform(player_pos[0] - 1000, player_pos[0] + 1000)
@@ -255,6 +259,7 @@ class TestGame(arcade.View):
             self.player_body.apply_force_at_world_point(
                 (0, -PLAYER_ACCELERATION), (0, 0)
             )
+
 
     def center_camera(self):
         # retrives player pos for camera centering
