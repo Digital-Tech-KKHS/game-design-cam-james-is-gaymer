@@ -1,12 +1,11 @@
-import random
-from pyglet.math import Vec2
 import math
+import random
+
 import arcade
 from PIL import Image
 from pyglet.math import Vec2
+
 from const import *
-
-
 
 ENEMY_SCALEING = 2
 
@@ -22,9 +21,6 @@ class Entity(arcade.Sprite):
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
         self.facing_direction = RIGHT_FACING
-
-
-
 
 
 class Debris(Entity):
@@ -47,12 +43,13 @@ class Rock(Debris):
         rock_width, rock_height = image.size
         self.rock_area = rock_height * rock_width
         self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
-        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT 
+        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT
 
 
 class Bullet(Entity):
     def __init__(self):
         super().__init__(name_file="bullet")
+
 
 class Vehicle(Entity):
     def __init__(self, name_file):
@@ -75,9 +72,9 @@ class Vehicle(Entity):
             self.net, (self.center_x, self.center_y)
         )
         vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
-        self.physics_body.angle = (
-            Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
-        )
+        self.physics_body.angle = Vec2(
+            self.physics_body.velocity[0], self.physics_body.velocity[1]
+        ).heading
 
         self.forces = []
         self.net = 0
@@ -116,6 +113,4 @@ class BasicEnemy(Enemy):
         if self.change_x > 0 and self.facing_direction == LEFT_FACING:
             self.facing_direction = RIGHT_FACING
         if self.change_x < 0 and self.facing_direction == RIGHT_FACING:
-            self.facing_direction = LEFT_FACING  
-
-        
+            self.facing_direction = LEFT_FACING
