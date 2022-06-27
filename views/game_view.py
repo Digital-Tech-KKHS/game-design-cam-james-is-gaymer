@@ -108,7 +108,7 @@ class TestGame(arcade.View):
     
 
     def on_update(self, delta_time):
-        # self.scene.update()
+        self.scene.update()
         self.scene['mining_laser'].clear()
 
         self.player_movement()
@@ -129,9 +129,6 @@ class TestGame(arcade.View):
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
 
-        # for rock in self.scene["rocks"]:
-        #     if rock.center_x > (self.player_sprite.center_x + 50):
-        #         rock.kill()
 
         # updates physics engine
         self.physics_engine.step()
@@ -176,6 +173,7 @@ class TestGame(arcade.View):
                     player_pos[1] - 4100, player_pos[1] + 4100
                 )
                 meteor.angle = random.randint(0, 360)
+                self.meteor_health = meteor.rock_health
 
                 # stops meteor from spawning within
                 # a certain area from the player
@@ -188,11 +186,9 @@ class TestGame(arcade.View):
                     < self.camera.position[1] + HEIGHT + 50
                 ):
                     self.scene["rocks"].append(meteor)
-                    
-
+                   
                     # runs function in rock class to find image width and height
                     # calculates mass with a mass constant
-
 
                     # creates an individual body for each,
                     # meteor and adds it into physics engine
@@ -208,7 +204,6 @@ class TestGame(arcade.View):
                     speed_y = random.uniform(METOR_MIN_SPEEED, METOR_MAX_SPEED)
                     rock_speed = (speed_x, speed_y)
                     self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
-
                     break
 
     def on_key_press(self, key, modifiers):
@@ -294,22 +289,31 @@ class TestGame(arcade.View):
         diff_x += self.camera.position[0]
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
+        keep_going = True
         for i in range(50):
-            hypot = i * 16
-            laser = arcade.Sprite(image_source1)
-            laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
-            laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
-            laser.angle = angle_degrees
-            laser.alpha = 255 - i * (255/50)
-            self.scene["mining_laser"].append(laser)
-            if arcade.check_for_collision_with_list(laser, self.scene['rocks']):
+            if keep_going:
+                hypot = i * 16
+                laser = arcade.Sprite(image_source1)
+                laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
+                laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
+                laser.angle = angle_degrees
+                laser.alpha = 255 - i * (255/50)
+                self.scene["mining_laser"].append(laser)
+                rocklist = arcade.check_for_collision_with_list(laser, self.scene['rocks'])
+            if rocklist:
                 contact = arcade.Sprite(image_source2)
                 contact.center_x = laser.center_x + (5 * math.cos(angle_radians))
                 contact.center_y = laser.center_y + (5 * math.sin(angle_radians))
                 contact.angle = angle_degrees
                 contact.alpha = laser.alpha
                 self.scene["mining_laser"].append(contact)
-                break 
+                keep_going = False
+
+            for meteor in rocklist:
+                
+                meteor.take_damage()
+                if meteor.rock_health <= 0:
+                    meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
@@ -361,3 +365,8 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
+
+    def rock_health(self):
+        
+            health_bar = arcade.draw_lrtb_rectangle_filled
+

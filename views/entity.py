@@ -8,10 +8,6 @@ from const import *
 
 
 
-ENEMY_SCALEING = 2
-
-MAX_SPEED = 6000
-
 
 class Entity(arcade.Sprite):
     def __init__(self, name_file):
@@ -44,6 +40,10 @@ class Rock(Debris):
         self.rock_area = rock_height * rock_width
         self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
         self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT 
+    
+    def take_damage(self):
+        self.rock_health -= PLAYER_MINING_LASER_DAMAGE
+
 
 
 class Bullet(Entity):
