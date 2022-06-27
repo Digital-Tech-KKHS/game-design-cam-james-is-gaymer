@@ -1,1 +1,1 @@
-from .entity import BasicEnemy, Rock
+from .entity import BasicEnemy, Bullet, Rock

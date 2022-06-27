@@ -1,11 +1,7 @@
 import arcade
 
 from views.game_view import TestGame
-
-WIDTH = 1600
-HEIGHT = 800
-TITLE = "test"
-
+from const import *
 
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
