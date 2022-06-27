@@ -4,12 +4,13 @@ import math
 import arcade
 from PIL import Image
 from pyglet.math import Vec2
+from const import *
 
 
 
 ENEMY_SCALEING = 2
 
-MAX_SPEED = 100
+MAX_SPEED = 6000
 
 
 class Entity(arcade.Sprite):
@@ -38,50 +39,17 @@ class Rock(Debris):
 
         self.num = random.randint(1, 5)
         super().__init__(f"meteor_{self.num}")
-
-    def meteor_mass(self, mass_constant):
-        """takes mass constant given from main game
-        calculates image size by using PIL(via pixel amount)
-        finds area of image
-        calculates sprite mass and returns to main game"""
-
         image = Image.open(f"assets/meteor_{self.num}.png")
         rock_width, rock_height = image.size
         self.rock_area = rock_height * rock_width
-        self.rock_mass = self.rock_area * mass_constant
-        return self.rock_mass
-
-    def meteor_speed(self, max_speed, min_speed):
-        """brings max and min values from game view then calculates
-        the speed of x and y axis then puts it in a tuple and
-        returns to main game to be implemented"""
-
-        speed_x = random.uniform(min_speed, max_speed)
-        speed_y = random.uniform(min_speed, max_speed)
-        speed_vec = (speed_x, speed_y)
-        return speed_vec
-    
-    def meteor_health(self, health_constant):
-        image = Image.open(f"assets/meteor_{self.num}.png")
-        rock_width, rock_height = image.size
-        self.rock_area = rock_height * rock_width
-        self.rock_health = self.rock_area * health_constant
-        return self.rock_health
+        self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
+        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT 
 
 
 class Bullet(Entity):
-    def __init__(self, name_file):
+    def __init__(self):
         super().__init__(name_file="bullet")
 
-    def bullet_speed(
-        self, player_x, player_y, mouse_x, mouse_y, max_speed, pos_correction
-    ):
-        player_pos = Vec2(player_x, player_y)
-        mouse_pos = Vec2(mouse_x, mouse_y)
-        mouse_pos += pos_correction
-        dir = mouse_pos - player_pos
-        vel = dir.from_magnitude(max_speed)
-        return vel
 class Vehicle(Entity):
     def __init__(self, name_file):
         super().__init__(name_file)

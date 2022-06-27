@@ -6,33 +6,11 @@ from pyglet.math import Vec2
 import arcade
 from pyglet.math import Vec2
 
+from const import METOR_MAX_SPEED, METOR_MIN_SPEEED
+
 from .entity import BasicEnemy, Bullet, Rock
+from const import *
 
-WIDTH = 1600
-HEIGHT = 800
-TITLE = "test"
-
-CHARACTER_SCAILING = 2
-
-DEFAULT_DAMPNING = 1.0
-
-# player constants that will be implemented
-# into pymunk physics engine
-PLAYER_ACCELERATION = 6000
-PLAYER_DEACCELERATION = 0.02
-PLAYER_MASS = 20
-PLAYER_FRICTION = 0.2
-PLAYER_MAX_SPEED = 260
-PLAYER_DAMPNING = 0.58
-
-# meteor constants settings for physics engine to use
-METOR_MAX_SPEED = 30000
-METOR_MIN_SPEEED = 10000
-METEOR_MASS = 0.2
-METEOR_FRICTION = 0.2
-METEOR_HEALTH_CONSTANT = 0.2
-
-MAX_SPAWN_TIME = 0.001
 
 
 class TestGame(arcade.View):
@@ -73,6 +51,7 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
+        self.scene.add_sprite_list("health")
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -117,12 +96,16 @@ class TestGame(arcade.View):
 
         self.gun_select = 1
 
+
+
     def on_draw(self):
         self.clear()
 
         self.camera.use()
 
         self.scene.draw()
+
+    
 
     def on_update(self, delta_time):
         # self.scene.update()
@@ -141,7 +124,7 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            self.spawn_enemy()
+            #self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
@@ -158,7 +141,7 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
-        if len(self.scene["zombie"]) < 50:
+        if len(self.scene["zombie"]) < 150:
             while True:
                 enemy = BasicEnemy("enemy")
                 enemy.center_x = random.uniform(player_pos[0] - 1000, player_pos[0] + 1000)
@@ -205,22 +188,25 @@ class TestGame(arcade.View):
                     < self.camera.position[1] + HEIGHT + 50
                 ):
                     self.scene["rocks"].append(meteor)
+                    
 
                     # runs function in rock class to find image width and height
                     # calculates mass with a mass constant
-                    mass = meteor.meteor_mass(METEOR_MASS)
+
 
                     # creates an individual body for each,
                     # meteor and adds it into physics engine
                     self.physics_engine.add_sprite(
-                        meteor, mass=mass, friction=METEOR_FRICTION, elasticity=0.7
+                        meteor, mass=meteor.rock_mass, damping=METEOR_FRICTION, elasticity=0.7
                     )
                     self.rock_body = self.physics_engine.get_physics_object(meteor).body
 
                     # runs speed function in rock class
                     # gives speed in a single variable in a tuple
                     # applies force to specified body
-                    rock_speed = meteor.meteor_speed(METOR_MAX_SPEED, METOR_MIN_SPEEED)
+                    speed_x = random.uniform(METOR_MIN_SPEEED, METOR_MAX_SPEED)
+                    speed_y = random.uniform(METOR_MIN_SPEEED, METOR_MAX_SPEED)
+                    rock_speed = (speed_x, speed_y)
                     self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
 
                     break
@@ -281,22 +267,18 @@ class TestGame(arcade.View):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if self.gun_select == 1:
-            bullet = Bullet("bullet")
+            player_pos = Vec2(self.player_sprite.center_x, self.player_sprite.center_y)
+            mouse_pos = Vec2(x, y)
+            mouse_pos += self.camera.position
+            speed = mouse_pos - player_pos
+            scaled_speed = speed.from_magnitude(MAX_SPEED)
+            bullet = Bullet()
             bullet.center_x = self.player_sprite.center_x
             bullet.center_y = self.player_sprite.center_y
-            self.physics_engine.add_sprite(bullet, mass=100)
+            self.physics_engine.add_sprite(bullet, mass=1000)
             bullet_body = self.physics_engine.get_physics_object(bullet).body
-            speed = bullet.bullet_speed(
-                self.player_sprite.center_x,
-                self.player_sprite.center_y,
-                x,
-                y,
-                2000,
-                self.camera.position,
-            )
-            bullet_body._set_velocity(speed)
+            bullet_body._set_velocity(scaled_speed)
             self.scene["bullets"].append(bullet)
-
         if self.gun_select == 2:
             self.laser_on = True
         
@@ -346,21 +328,27 @@ class TestGame(arcade.View):
                 rock.kill()
 
     def bullet_kill(self):
+        
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
             collision = arcade.check_for_collision_with_list(
                 bullet, self.scene["rocks"]
-            )
+                )
             for b in collision:
-                bullet.kill()
+                    bullet.kill()
             if bullet.center_x >= (player_pos[0] + WIDTH) or bullet.center_x <= (
                 player_pos[0] - WIDTH
-            ):
+                ):
                 bullet.kill()
             if bullet.center_y >= (player_pos[1] + HEIGHT) or bullet.center_y <= (
                 player_pos[1] - HEIGHT
-            ):
+                ):
                 bullet.kill()
+            for zombie in self.scene['zombie']:
+                good_collision = arcade.check_for_collision(bullet, zombie)
+                if good_collision:
+                    bullet.kill()
+                    zombie.kill()
 
     def enemy_kill(self):
         player_pos = self.player_body._get_position()
