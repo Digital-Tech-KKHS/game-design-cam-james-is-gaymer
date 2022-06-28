@@ -22,6 +22,10 @@ class Entity(arcade.Sprite):
         super().__init__(main_path)
         self.facing_direction = RIGHT_FACING
 
+    @property
+    def pos(self):
+        return Vec2(self.center_x, self.center_y)
+
 
 class Debris(Entity):
     def __init__(self, name_file):
@@ -93,10 +97,6 @@ class Vehicle(Entity):
             force = ideal - self.vel
             force = force.clamp(-self.max_force, self.max_force)
             self.forces.append(force)
-
-    @property
-    def pos(self):
-        return Vec2(self.center_x, self.center_y)
 
 
 class Enemy(Vehicle):

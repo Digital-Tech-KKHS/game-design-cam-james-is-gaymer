@@ -113,6 +113,9 @@ class TestGame(arcade.View):
                 if enemy is not other:
                     enemy.flee(other.pos, 150)
 
+            for rocks in self.scene["rocks"]:
+                enemy.flee(rocks.pos, 300)
+
         self.center_camera()
 
         self.meteor_kill()
@@ -138,7 +141,7 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
-        if len(self.scene["zombie"]) < 50:
+        if len(self.scene["zombie"]) < 20:
             while True:
                 enemy = BasicEnemy("enemy")
                 enemy.center_x = random.uniform(
@@ -168,7 +171,7 @@ class TestGame(arcade.View):
     def spawn_meteor(self):
         # retrieves player position to be able to spawn meteors
         player_pos = self.player_body._get_position()
-        if len(self.scene["rocks"]) < 300:
+        if len(self.scene["rocks"]) < 200:
 
             while True:
                 meteor = Rock("meteor")
