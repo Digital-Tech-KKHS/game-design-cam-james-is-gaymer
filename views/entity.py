@@ -3,7 +3,6 @@ from pyglet.math import Vec2
 import math
 import arcade
 from PIL import Image
-from pyglet.math import Vec2
 from const import *
 
 
@@ -28,6 +27,18 @@ class Debris(Entity):
 class Scrap(Debris):
     def __init__(self, name_file):
         super().__init__(name_file)
+        drop = {good: {drop_1:f"{name_file}"}}
+        
+    def get_drop(self):
+        drop_choice = random.random()
+        if drop_choice < 0.5:
+            return
+        if drop_choice <= 0.5 or drop_choice > 0.7:
+            print(1)
+        elif drop_choice <=0.7 or drop_choice > 0.9:
+            print(2)
+        elif drop_choice <= 0.9 or drop_choice >= 1:
+            print(3)
 
 
 class Rock(Debris):
@@ -66,14 +77,15 @@ class Vehicle(Entity):
         physics_engine = self.physics_engines[0]
         self.physics_body = physics_engine.get_physics_object(self).body
         self.physics_body.angular_velocity *= 0.7
-        self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
-        self.physics_body.apply_force_at_world_point(
-            self.net, (self.center_x, self.center_y)
-        )
-        vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
-        self.physics_body.angle = (
-            Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
-        )
+        if self.forces:
+            self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
+            self.physics_body.apply_force_at_world_point(
+                self.net, (self.center_x, self.center_y)
+            )
+            self.vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
+            self.physics_body.angle = (
+                Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
+            )
 
         self.forces = []
         self.net = 0

@@ -124,7 +124,7 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            #self.spawn_enemy()
+            self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
