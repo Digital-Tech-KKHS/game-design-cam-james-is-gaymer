@@ -7,7 +7,7 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
-from const import METOR_MAX_SPEED, METOR_MIN_SPEEED
+from views.inventory import InventoryView
 
 from .entity import BasicEnemy, Bullet, Rock
 
@@ -231,6 +231,8 @@ class TestGame(arcade.View):
             self.gun_select = 1
         if key == arcade.key.KEY_2:
             self.gun_select = 2
+        if key == arcade.key.E:
+            self.window.show_view(self.window.inventory)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
