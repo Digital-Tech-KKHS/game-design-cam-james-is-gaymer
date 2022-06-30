@@ -3,6 +3,7 @@ import arcade
 from views.game_view import TestGame
 from const import *
 
+
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)

@@ -24,21 +24,30 @@ class Debris(Entity):
         self.scale = random.randint(1, 10)
 
 
-class Scrap(Debris):
-    def __init__(self, name_file):
-        super().__init__(name_file)
-        drop = {good: {drop_1:f"{name_file}"}}
+class Scrap():
+    def __init__(self):
+        super().__init__()
+
+        self.common = ["assets/drop_1.png", "assets/drop_2.png", "assets/drop_3.png"]
+        self.rare = ["assets/drop_4.png"]
+        self.legendary = ["assets/drop_5.png"]
         
     def get_drop(self):
         drop_choice = random.random()
         if drop_choice < 0.5:
             return
-        if drop_choice <= 0.5 or drop_choice > 0.7:
-            print(1)
-        elif drop_choice <=0.7 or drop_choice > 0.9:
-            print(2)
-        elif drop_choice <= 0.9 or drop_choice >= 1:
-            print(3)
+        if 0.5<= drop_choice > 0.7:
+            num = random.randint(0, 2)
+            choice = self.common[num]
+            return arcade.Sprite(choice)
+        elif 0.7 <= drop_choice > 0.9:
+            choice = self.rare
+            return arcade.Sprite(choice)
+        elif 0.9 <= drop_choice >= 1:
+            choice = self.legendary
+            return arcade.Sprite(choice)
+        
+        
 
 
 class Rock(Debris):

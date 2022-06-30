@@ -1,16 +1,14 @@
 import math
 import random
-from email.mime import image
+
 
 from pyglet.math import Vec2
 import arcade
 from pyglet.math import Vec2
 
-from const import METOR_MAX_SPEED, METOR_MIN_SPEEED
 
-from .entity import BasicEnemy, Bullet, Rock
+from .entity import BasicEnemy, Bullet, Rock, Scrap
 from const import *
-
 
 
 class TestGame(arcade.View):
@@ -51,7 +49,8 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
-        self.scene.add_sprite_list("health")
+        self.scene.add_sprite_list("scrap")
+        
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -72,7 +71,6 @@ class TestGame(arcade.View):
         self.accelerating_down = False
         self.accelerating_left = False
         self.accelerating_right = False
-
 
         self.spawn_time = 0.001
         self.time_between_spawn = 0
@@ -96,8 +94,6 @@ class TestGame(arcade.View):
 
         self.gun_select = 1
 
-
-
     def on_draw(self):
         self.clear()
 
@@ -105,11 +101,11 @@ class TestGame(arcade.View):
 
         self.scene.draw()
 
-    
-
     def on_update(self, delta_time):
         self.scene.update()
-        self.scene['mining_laser'].clear()
+        self.scene["mining_laser"].clear()
+
+
 
         self.player_movement()
         for enemy in self.scene["zombie"]:
@@ -124,11 +120,10 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            self.spawn_enemy()
+            # self.spawn_enemy()
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
-
 
         # updates physics engine
         self.physics_engine.step()
@@ -141,8 +136,12 @@ class TestGame(arcade.View):
         if len(self.scene["zombie"]) < 150:
             while True:
                 enemy = BasicEnemy("enemy")
-                enemy.center_x = random.uniform(player_pos[0] - 1000, player_pos[0] + 1000)
-                enemy.center_y = random.uniform(player_pos[1] - 1000, player_pos[1] + 1000)
+                enemy.center_x = random.uniform(
+                    player_pos[0] - 1000, player_pos[0] + 1000
+                )
+                enemy.center_y = random.uniform(
+                    player_pos[1] - 1000, player_pos[1] + 1000
+                )
                 # stops enemy from spawning within
                 # a certain area from the player
                 if not (
@@ -155,7 +154,9 @@ class TestGame(arcade.View):
                 ):
                     self.scene["zombie"].append(enemy)
 
-                    self.physics_engine.add_sprite(enemy,PLAYER_MASS, PLAYER_FRICTION, 0.7)
+                    self.physics_engine.add_sprite(
+                        enemy, PLAYER_MASS, PLAYER_FRICTION, 0.7
+                    )
                     self.enemy_body = self.physics_engine.get_physics_object(enemy).body
                     break
 
@@ -186,14 +187,17 @@ class TestGame(arcade.View):
                     < self.camera.position[1] + HEIGHT + 50
                 ):
                     self.scene["rocks"].append(meteor)
-                   
+
                     # runs function in rock class to find image width and height
                     # calculates mass with a mass constant
 
                     # creates an individual body for each,
                     # meteor and adds it into physics engine
                     self.physics_engine.add_sprite(
-                        meteor, mass=meteor.rock_mass, damping=METEOR_FRICTION, elasticity=0.7
+                        meteor,
+                        mass=meteor.rock_mass,
+                        damping=METEOR_FRICTION,
+                        elasticity=0.7,
                     )
                     self.rock_body = self.physics_engine.get_physics_object(meteor).body
 
@@ -276,7 +280,7 @@ class TestGame(arcade.View):
             self.scene["bullets"].append(bullet)
         if self.gun_select == 2:
             self.laser_on = True
-        
+
     def fire_laser(self):
         x = self.window._mouse_x
         y = self.window._mouse_y
@@ -297,9 +301,11 @@ class TestGame(arcade.View):
                 laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
                 laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
                 laser.angle = angle_degrees
-                laser.alpha = 255 - i * (255/50)
+                laser.alpha = 255 - i * (255 / 50)
                 self.scene["mining_laser"].append(laser)
-                rocklist = arcade.check_for_collision_with_list(laser, self.scene['rocks'])
+                rocklist = arcade.check_for_collision_with_list(
+                    laser, self.scene["rocks"]
+                )
             if rocklist:
                 contact = arcade.Sprite(image_source2)
                 contact.center_x = laser.center_x + (5 * math.cos(angle_radians))
@@ -310,14 +316,19 @@ class TestGame(arcade.View):
                 keep_going = False
 
             for meteor in rocklist:
-                
+
                 meteor.take_damage()
                 if meteor.rock_health <= 0:
+                    scrap = Scrap()
+                    prize = scrap.get_drop()
+                    if prize:
+                        prize.center_x = meteor.center_x
+                        prize.center_y = meteor.center_y
+                        self.scene['scrap'].append(prize)
                     meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
-
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
@@ -332,23 +343,23 @@ class TestGame(arcade.View):
                 rock.kill()
 
     def bullet_kill(self):
-        
+
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
             collision = arcade.check_for_collision_with_list(
                 bullet, self.scene["rocks"]
-                )
+            )
             for b in collision:
-                    bullet.kill()
+                bullet.kill()
             if bullet.center_x >= (player_pos[0] + WIDTH) or bullet.center_x <= (
                 player_pos[0] - WIDTH
-                ):
+            ):
                 bullet.kill()
             if bullet.center_y >= (player_pos[1] + HEIGHT) or bullet.center_y <= (
                 player_pos[1] - HEIGHT
-                ):
+            ):
                 bullet.kill()
-            for zombie in self.scene['zombie']:
+            for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:
                     bullet.kill()
@@ -365,8 +376,4 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
-
-    def rock_health(self):
-        
-            health_bar = arcade.draw_lrtb_rectangle_filled
 
