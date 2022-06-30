@@ -34,16 +34,16 @@ class Scrap():
         
     def get_drop(self):
         drop_choice = random.random()
-        if drop_choice < 0.5:
+        if drop_choice < 0.6:
             return
-        if 0.5<= drop_choice > 0.7:
+        if 0.6<= drop_choice > 0.8:
             num = random.randint(0, 2)
             choice = self.common[num]
             return arcade.Sprite(choice)
-        elif 0.7 <= drop_choice > 0.9:
+        elif 0.8 <= drop_choice > 0.95:
             choice = self.rare
             return arcade.Sprite(choice)
-        elif 0.9 <= drop_choice >= 1:
+        elif 0.95 <= drop_choice >= 1:
             choice = self.legendary
             return arcade.Sprite(choice)
         
