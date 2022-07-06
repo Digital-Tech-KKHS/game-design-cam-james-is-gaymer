@@ -1,7 +1,7 @@
 import arcade
 
-from views.game_view import TestGame
 from const import *
+from views.game_view import TestGame
 
 
 class GameWindow(arcade.Window):

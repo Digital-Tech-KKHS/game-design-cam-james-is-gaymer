@@ -1,10 +1,11 @@
-import random
-from pyglet.math import Vec2
 import math
+import random
+
 import arcade
 from PIL import Image
-from const import *
+from pyglet.math import Vec2
 
+from const import *
 
 
 
@@ -15,39 +16,17 @@ class Entity(arcade.Sprite):
         super().__init__(main_path)
 
 
-
-
-
 class Debris(Entity):
     def __init__(self, name_file):
         super().__init__(name_file)
         self.scale = random.randint(1, 10)
 
 
-class Scrap():
+class Scrap:
     def __init__(self):
         super().__init__()
+        pass
 
-        self.common = ["assets/drop_1.png", "assets/drop_2.png", "assets/drop_3.png"]
-        self.rare = ["assets/drop_4.png"]
-        self.legendary = ["assets/drop_5.png"]
-        
-    def get_drop(self):
-        drop_choice = random.random()
-        if drop_choice < 0.6:
-            return
-        if 0.6<= drop_choice > 0.8:
-            num = random.randint(0, 2)
-            choice = self.common[num]
-            return arcade.Sprite(choice)
-        elif 0.8 <= drop_choice > 0.95:
-            choice = self.rare
-            return arcade.Sprite(choice)
-        elif 0.95 <= drop_choice >= 1:
-            choice = self.legendary
-            return arcade.Sprite(choice)
-        
-        
 
 
 class Rock(Debris):
@@ -59,16 +38,16 @@ class Rock(Debris):
         rock_width, rock_height = image.size
         self.rock_area = rock_height * rock_width
         self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
-        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT 
-    
+        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT
+
     def take_damage(self):
         self.rock_health -= PLAYER_MINING_LASER_DAMAGE
-
 
 
 class Bullet(Entity):
     def __init__(self):
         super().__init__(name_file="bullet")
+
 
 class Vehicle(Entity):
     def __init__(self, name_file):
@@ -92,9 +71,9 @@ class Vehicle(Entity):
                 self.net, (self.center_x, self.center_y)
             )
             self.vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
-            self.physics_body.angle = (
-                Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
-            )
+            self.physics_body.angle = Vec2(
+                self.physics_body.velocity[0], self.physics_body.velocity[1]
+            ).heading
 
         self.forces = []
         self.net = 0

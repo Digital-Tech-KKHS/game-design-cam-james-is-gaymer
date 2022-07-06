@@ -1,14 +1,14 @@
 import math
 import random
 
-
-from pyglet.math import Vec2
 import arcade
 from pyglet.math import Vec2
 
+from const import *
+from views.collectables import ScrapCopper
 
 from .entity import BasicEnemy, Bullet, Rock, Scrap
-from const import *
+from views.collectables import *
 
 
 class TestGame(arcade.View):
@@ -37,6 +37,10 @@ class TestGame(arcade.View):
         self.gun_select = None
         self.laser_on = False
 
+        self.scrap_steel = int
+        self.scrap_copper = int
+        self.acid = int
+
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -50,7 +54,6 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
         self.scene.add_sprite_list("scrap")
-        
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -74,6 +77,12 @@ class TestGame(arcade.View):
 
         self.spawn_time = 0.001
         self.time_between_spawn = 0
+
+        self.scrap_steel = 0
+        self.scrap_copper = 0
+        self.acid = 0
+
+
 
         # adds player sprite to physics engine
         # gets player body so code can find variables ]
@@ -105,8 +114,6 @@ class TestGame(arcade.View):
         self.scene.update()
         self.scene["mining_laser"].clear()
 
-
-
         self.player_movement()
         for enemy in self.scene["zombie"]:
             enemy.seek(Vec2(self.player_sprite.center_x, self.player_sprite.center_y))
@@ -117,6 +124,8 @@ class TestGame(arcade.View):
         self.meteor_kill()
 
         self.bullet_kill()
+
+        self.pick_up()
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
@@ -319,12 +328,12 @@ class TestGame(arcade.View):
 
                 meteor.take_damage()
                 if meteor.rock_health <= 0:
-                    scrap = Scrap()
-                    prize = scrap.get_drop()
+                    
+                    prize = self.get_drop()
                     if prize:
                         prize.center_x = meteor.center_x
                         prize.center_y = meteor.center_y
-                        self.scene['scrap'].append(prize)
+                        self.scene["scrap"].append(prize)
                     meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
@@ -341,6 +350,23 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 rock.kill()
+
+
+    def get_drop(self):
+        common = [ScrapSteel(), ScrapCopper(), Acid()]
+        rare = ["assets/drop_4.png"]
+        legendary = ["assets/drop_5.png"]
+        drop_choice = random.random()
+        if drop_choice < 0.6:
+            return
+        if 0.6 <= drop_choice > 0.8:
+            return random.choice(common)
+        # elif 0.8 <= drop_choice > 0.95:
+        #     choice = rare
+        #     return choice
+        # elif 0.95 <= drop_choice >= 1:
+        #     choice = legendary
+        #     return choice
 
     def bullet_kill(self):
 
@@ -376,4 +402,23 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
+
+    def pick_up(self):
+        drop_list = arcade.check_for_collision_with_list(
+            self.player_sprite, self.scene["scrap"]
+        )
+
+        if drop_list:
+            
+
+            for drop in self.scene["scrap"]:
+                if type(drop) == ScrapSteel:
+                    drop.kill()
+                    self.scrap_steel += 1
+                elif type(drop) == ScrapCopper:
+                    drop.kill()
+                    self.scrap_copper += 1
+                elif type(drop) == Acid:
+                    drop.kill()
+                    self.acid += 1
 
