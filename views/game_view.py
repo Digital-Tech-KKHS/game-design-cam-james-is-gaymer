@@ -142,7 +142,7 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
-        if len(self.scene["zombie"]) < 150:
+        if len(self.scene["zombie"]) < 10000:
             while True:
                 enemy = BasicEnemy("enemy")
                 enemy.center_x = random.uniform(
