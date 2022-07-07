@@ -404,21 +404,23 @@ class TestGame(arcade.View):
                 enemy.kill()
 
     def pick_up(self):
-        drop_list = arcade.check_for_collision_with_list(
-            self.player_sprite, self.scene["scrap"]
-        )
 
-        if drop_list:
+
+
             
 
-            for drop in self.scene["scrap"]:
+        for drop in self.scene["scrap"]:
+            drop_list = arcade.check_for_collision(
+                self.player_sprite, drop)
+            if drop_list:
                 if type(drop) == ScrapSteel:
                     drop.kill()
                     self.scrap_steel += 1
                 elif type(drop) == ScrapCopper:
                     drop.kill()
-                    self.scrap_copper += 1
+                    self.scrap_copper += 1                
                 elif type(drop) == Acid:
                     drop.kill()
                     self.acid += 1
+                    
 
