@@ -13,7 +13,7 @@ class Entity(arcade.Sprite):
 
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
-        self.facing_direction = RIGHT_FACING
+        
 
 
     @property
