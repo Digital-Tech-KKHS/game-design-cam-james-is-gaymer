@@ -1,15 +1,16 @@
 import math
 import random
-from email.mime import image
-from turtle import heading
 
 import arcade
 from pyglet.math import Vec2
 
 from const import *
+from views.collectables import *
+from views.collectables import ScrapCopper
+
+from .entity import BasicEnemy, Bullet, Rock, Scrap
 from views.inventory import InventoryView
 
-from .entity import BasicEnemy, Bullet, Rock
 
 
 class TestGame(arcade.View):
@@ -38,6 +39,10 @@ class TestGame(arcade.View):
         self.gun_select = None
         self.laser_on = False
 
+        self.scrap_steel = int
+        self.scrap_copper = int
+        self.acid = int
+
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -50,7 +55,7 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("player")
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
-        self.scene.add_sprite_list("health")
+        self.scene.add_sprite_list("scrap")
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -74,6 +79,10 @@ class TestGame(arcade.View):
 
         self.spawn_time = 0.001
         self.time_between_spawn = 0
+
+        self.scrap_steel = 0
+        self.scrap_copper = 0
+        self.acid = 0
 
         # adds player sprite to physics engine
         # gets player body so code can find variables ]
@@ -102,7 +111,8 @@ class TestGame(arcade.View):
         self.scene.draw()
 
     def on_update(self, delta_time):
-        # self.scene.update()
+        self.scene.update()
+
         self.scene["mining_laser"].clear()
 
         self.player_movement()
@@ -122,16 +132,17 @@ class TestGame(arcade.View):
 
         self.bullet_kill()
 
+        self.pick_up()
+
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
+
             self.spawn_enemy()
+
+
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
-
-        # for rock in self.scene["rocks"]:
-        #     if rock.center_x > (self.player_sprite.center_x + 50):
-        #         rock.kill()
 
         # updates physics engine
         self.physics_engine.step()
@@ -141,7 +152,9 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
+
         if len(self.scene["zombie"]) < 20:
+
             while True:
                 enemy = BasicEnemy("enemy")
                 enemy.center_x = random.uniform(
@@ -182,6 +195,7 @@ class TestGame(arcade.View):
                     player_pos[1] - 4100, player_pos[1] + 4100
                 )
                 meteor.angle = random.randint(0, 360)
+                self.meteor_health = meteor.rock_health
 
                 # stops meteor from spawning within
                 # a certain area from the player
@@ -215,7 +229,6 @@ class TestGame(arcade.View):
                     speed_y = random.uniform(METOR_MIN_SPEEED, METOR_MAX_SPEED)
                     rock_speed = (speed_x, speed_y)
                     self.rock_body.apply_force_at_world_point((rock_speed), (0, 0))
-
                     break
 
     def on_key_press(self, key, modifiers):
@@ -303,22 +316,42 @@ class TestGame(arcade.View):
         diff_x += self.camera.position[0]
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
+        keep_going = True
         for i in range(50):
-            hypot = i * 16
-            laser = arcade.Sprite(image_source1)
-            laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
-            laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
-            laser.angle = angle_degrees
-            laser.alpha = 255 - i * (255 / 50)
-            self.scene["mining_laser"].append(laser)
-            if arcade.check_for_collision_with_list(laser, self.scene["rocks"]):
+
+            if keep_going:
+                hypot = i * 16
+                laser = arcade.Sprite(image_source1)
+                laser.center_x = pos[0] + (hypot * math.cos(angle_radians))
+                laser.center_y = pos[1] + (hypot * math.sin(angle_radians))
+                laser.angle = angle_degrees
+                laser.alpha = 255 - i * (255 / 50)
+                self.scene["mining_laser"].append(laser)
+                rocklist = arcade.check_for_collision_with_list(
+                    laser, self.scene["rocks"]
+                )
+            if rocklist:
+
                 contact = arcade.Sprite(image_source2)
                 contact.center_x = laser.center_x + (5 * math.cos(angle_radians))
                 contact.center_y = laser.center_y + (5 * math.sin(angle_radians))
                 contact.angle = angle_degrees
                 contact.alpha = laser.alpha
                 self.scene["mining_laser"].append(contact)
-                break
+                keep_going = False
+
+            for meteor in rocklist:
+
+                meteor.take_damage()
+                if meteor.rock_health <= 0:
+
+                    prize = self.get_drop()
+                    if prize:
+                        prize.center_x = meteor.center_x
+                        prize.center_y = meteor.center_y
+                        self.scene["scrap"].append(prize)
+                    meteor.kill()
+
 
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
@@ -334,6 +367,22 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 rock.kill()
+
+    def get_drop(self):
+        common = [ScrapSteel(), ScrapCopper(), Acid()]
+        rare = ["assets/drop_4.png"]
+        legendary = ["assets/drop_5.png"]
+        drop_choice = random.random()
+        if drop_choice < 0.6:
+            return
+        if 0.6 <= drop_choice > 0.8:
+            return random.choice(common)
+        # elif 0.8 <= drop_choice > 0.95:
+        #     choice = rare
+        #     return choice
+        # elif 0.95 <= drop_choice >= 1:
+        #     choice = legendary
+        #     return choice
 
     def bullet_kill(self):
 
@@ -369,3 +418,18 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
+
+    def pick_up(self):
+
+        for drop in self.scene["scrap"]:
+            drop_list = arcade.check_for_collision(self.player_sprite, drop)
+            if drop_list:
+                if type(drop) == ScrapSteel:
+                    drop.kill()
+                    self.scrap_steel += 1
+                elif type(drop) == ScrapCopper:
+                    drop.kill()
+                    self.scrap_copper += 1
+                elif type(drop) == Acid:
+                    drop.kill()
+                    self.acid += 1
