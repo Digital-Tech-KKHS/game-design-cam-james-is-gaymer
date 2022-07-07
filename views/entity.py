@@ -1,16 +1,11 @@
-import random
-from pyglet.math import Vec2
 import math
+import random
+
 import arcade
 from PIL import Image
 from pyglet.math import Vec2
+
 from const import *
-
-
-
-ENEMY_SCALEING = 2
-
-MAX_SPEED = 6000
 
 
 class Entity(arcade.Sprite):
@@ -20,18 +15,16 @@ class Entity(arcade.Sprite):
         super().__init__(main_path)
 
 
-
-
-
 class Debris(Entity):
     def __init__(self, name_file):
         super().__init__(name_file)
         self.scale = random.randint(1, 10)
 
 
-class Scrap(Debris):
-    def __init__(self, name_file):
-        super().__init__(name_file)
+class Scrap:
+    def __init__(self):
+        super().__init__()
+        pass
 
 
 class Rock(Debris):
@@ -43,12 +36,16 @@ class Rock(Debris):
         rock_width, rock_height = image.size
         self.rock_area = rock_height * rock_width
         self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
-        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT 
+        self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT
+
+    def take_damage(self):
+        self.rock_health -= PLAYER_MINING_LASER_DAMAGE
 
 
 class Bullet(Entity):
     def __init__(self):
         super().__init__(name_file="bullet")
+
 
 class Vehicle(Entity):
     def __init__(self, name_file):
@@ -66,14 +63,15 @@ class Vehicle(Entity):
         physics_engine = self.physics_engines[0]
         self.physics_body = physics_engine.get_physics_object(self).body
         self.physics_body.angular_velocity *= 0.7
-        self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
-        self.physics_body.apply_force_at_world_point(
-            self.net, (self.center_x, self.center_y)
-        )
-        vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
-        self.physics_body.angle = (
-            Vec2(self.physics_body.velocity[0], self.physics_body.velocity[1]).heading
-        )
+        if self.forces:
+            self.net = sum(self.forces).clamp(-self.max_force, self.max_force)
+            self.physics_body.apply_force_at_world_point(
+                self.net, (self.center_x, self.center_y)
+            )
+            self.vel = Vec2(self.physics_body.velocity.x, self.physics_body.velocity.y)
+            self.physics_body.angle = Vec2(
+                self.physics_body.velocity[0], self.physics_body.velocity[1]
+            ).heading
 
         self.forces = []
         self.net = 0
