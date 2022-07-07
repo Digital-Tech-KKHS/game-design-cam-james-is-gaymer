@@ -9,6 +9,7 @@ from views.collectables import *
 from views.collectables import ScrapCopper
 
 from .entity import BasicEnemy, Bullet, Rock, Scrap
+from views.inventory import InventoryView
 
 
 
@@ -243,6 +244,8 @@ class TestGame(arcade.View):
             self.gun_select = 1
         if key == arcade.key.KEY_2:
             self.gun_select = 2
+        if key == arcade.key.E:
+            self.window.show_view(self.window.inventory)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
@@ -335,7 +338,7 @@ class TestGame(arcade.View):
                 contact.angle = angle_degrees
                 contact.alpha = laser.alpha
                 self.scene["mining_laser"].append(contact)
-     keep_going = False
+                keep_going = False
 
             for meteor in rocklist:
 
