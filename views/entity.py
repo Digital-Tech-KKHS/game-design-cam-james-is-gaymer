@@ -13,6 +13,13 @@ class Entity(arcade.Sprite):
 
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
+        self.facing_direction = RIGHT_FACING
+
+
+    @property
+    def pos(self):
+        return Vec2(self.center_x, self.center_y)
+
 
 
 class Debris(Entity):
@@ -38,8 +45,11 @@ class Rock(Debris):
         self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
         self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT
 
+
+
     def take_damage(self):
         self.rock_health -= PLAYER_MINING_LASER_DAMAGE
+
 
 
 class Bullet(Entity):
@@ -73,6 +83,7 @@ class Vehicle(Entity):
                 self.physics_body.velocity[0], self.physics_body.velocity[1]
             ).heading
 
+
         self.forces = []
         self.net = 0
 
@@ -91,10 +102,6 @@ class Vehicle(Entity):
             force = force.clamp(-self.max_force, self.max_force)
             self.forces.append(force)
 
-    @property
-    def pos(self):
-        return Vec2(self.center_x, self.center_y)
-
 
 class Enemy(Vehicle):
     def __init__(self, name_file):
@@ -105,3 +112,9 @@ class Enemy(Vehicle):
 class BasicEnemy(Enemy):
     def __init__(self, name_file):
         super().__init__("enemy_idle")
+
+    def update_animation(self, delta_time: float = 1 / 60):
+        if self.change_x > 0 and self.facing_direction == LEFT_FACING:
+            self.facing_direction = RIGHT_FACING
+        if self.change_x < 0 and self.facing_direction == RIGHT_FACING:
+            self.facing_direction = LEFT_FACING

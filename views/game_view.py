@@ -11,6 +11,7 @@ from views.collectables import ScrapCopper
 from .entity import BasicEnemy, Bullet, Rock, Scrap
 
 
+
 class TestGame(arcade.View):
     def __init__(self):
         super().__init__()
@@ -110,12 +111,19 @@ class TestGame(arcade.View):
 
     def on_update(self, delta_time):
         self.scene.update()
+
         self.scene["mining_laser"].clear()
 
         self.player_movement()
         for enemy in self.scene["zombie"]:
             enemy.seek(Vec2(self.player_sprite.center_x, self.player_sprite.center_y))
             enemy.update()
+            for other in self.scene["zombie"]:
+                if enemy is not other:
+                    enemy.flee(other.pos, 150)
+
+            for rocks in self.scene["rocks"]:
+                enemy.flee(rocks.pos, 300)
 
         self.center_camera()
 
@@ -127,7 +135,10 @@ class TestGame(arcade.View):
 
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
-            # self.spawn_enemy()
+
+            self.spawn_enemy()
+
+
             self.spawn_meteor()
             self.time_between_spawn = 0
             self.spawn_time = 0.001  # random.uniform(3, MAX_SPAWN_TIME)
@@ -140,7 +151,9 @@ class TestGame(arcade.View):
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
-        if len(self.scene["zombie"]) < 10000:
+
+        if len(self.scene["zombie"]) < 20:
+
             while True:
                 enemy = BasicEnemy("enemy")
                 enemy.center_x = random.uniform(
@@ -170,7 +183,7 @@ class TestGame(arcade.View):
     def spawn_meteor(self):
         # retrieves player position to be able to spawn meteors
         player_pos = self.player_body._get_position()
-        if len(self.scene["rocks"]) < 300:
+        if len(self.scene["rocks"]) < 200:
 
             while True:
                 meteor = Rock("meteor")
@@ -302,6 +315,7 @@ class TestGame(arcade.View):
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
         keep_going = True
         for i in range(50):
+
             if keep_going:
                 hypot = i * 16
                 laser = arcade.Sprite(image_source1)
@@ -314,13 +328,14 @@ class TestGame(arcade.View):
                     laser, self.scene["rocks"]
                 )
             if rocklist:
+
                 contact = arcade.Sprite(image_source2)
                 contact.center_x = laser.center_x + (5 * math.cos(angle_radians))
                 contact.center_y = laser.center_y + (5 * math.sin(angle_radians))
                 contact.angle = angle_degrees
                 contact.alpha = laser.alpha
                 self.scene["mining_laser"].append(contact)
-                keep_going = False
+     keep_going = False
 
             for meteor in rocklist:
 
@@ -333,6 +348,7 @@ class TestGame(arcade.View):
                         prize.center_y = meteor.center_y
                         self.scene["scrap"].append(prize)
                     meteor.kill()
+
 
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
