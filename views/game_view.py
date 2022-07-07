@@ -5,10 +5,10 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
+from views.collectables import *
 from views.collectables import ScrapCopper
 
 from .entity import BasicEnemy, Bullet, Rock, Scrap
-from views.collectables import *
 
 
 class TestGame(arcade.View):
@@ -81,8 +81,6 @@ class TestGame(arcade.View):
         self.scrap_steel = 0
         self.scrap_copper = 0
         self.acid = 0
-
-
 
         # adds player sprite to physics engine
         # gets player body so code can find variables ]
@@ -328,7 +326,7 @@ class TestGame(arcade.View):
 
                 meteor.take_damage()
                 if meteor.rock_health <= 0:
-                    
+
                     prize = self.get_drop()
                     if prize:
                         prize.center_x = meteor.center_x
@@ -350,7 +348,6 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 rock.kill()
-
 
     def get_drop(self):
         common = [ScrapSteel(), ScrapCopper(), Acid()]
@@ -405,22 +402,15 @@ class TestGame(arcade.View):
 
     def pick_up(self):
 
-
-
-            
-
         for drop in self.scene["scrap"]:
-            drop_list = arcade.check_for_collision(
-                self.player_sprite, drop)
+            drop_list = arcade.check_for_collision(self.player_sprite, drop)
             if drop_list:
                 if type(drop) == ScrapSteel:
                     drop.kill()
                     self.scrap_steel += 1
                 elif type(drop) == ScrapCopper:
                     drop.kill()
-                    self.scrap_copper += 1                
+                    self.scrap_copper += 1
                 elif type(drop) == Acid:
                     drop.kill()
                     self.acid += 1
-                    
-

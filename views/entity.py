@@ -8,7 +8,6 @@ from pyglet.math import Vec2
 from const import *
 
 
-
 class Entity(arcade.Sprite):
     def __init__(self, name_file):
 
@@ -26,7 +25,6 @@ class Scrap:
     def __init__(self):
         super().__init__()
         pass
-
 
 
 class Rock(Debris):

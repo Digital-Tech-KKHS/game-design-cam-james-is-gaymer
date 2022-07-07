@@ -7,8 +7,6 @@ class ScrapSteel(arcade.Sprite):
         super().__init__(main_path)
 
 
-    
-
 class ScrapCopper(arcade.Sprite):
     def __init__(self):
         main_path = "assets/drop_2.png"
