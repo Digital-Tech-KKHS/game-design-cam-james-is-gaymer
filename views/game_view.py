@@ -422,14 +422,7 @@ class TestGame(arcade.View):
     def pick_up(self):
 
         for drop in self.scene["scrap"]:
-            drop_list = arcade.check_for_collision(self.player_sprite, drop)
-            if drop_list:
-                if type(drop) == ScrapSteel:
-                    drop.kill()
-                    self.scrap_steel += 1
-                elif type(drop) == ScrapCopper:
-                    drop.kill()
-                    self.scrap_copper += 1
-                elif type(drop) == Acid:
-                    drop.kill()
-                    self.acid += 1
+            if arcade.check_for_collision(self.player_sprite, drop) and len(self.window.resources) < 25:
+                self.scene["scrap"].remove(drop)
+                self.window.resources.append(drop)
+
