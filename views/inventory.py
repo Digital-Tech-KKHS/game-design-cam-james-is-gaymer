@@ -20,8 +20,8 @@ class InventoryView(arcade.View):
         self.inventory_grid.center_y = HEIGHT/2
 
         for i, resource in enumerate(self.window.resources):
-            resource.center_x = 200 + 50 * (i % 4)
-            resource.center_y = 200 + 50 * (i // 4)
+            resource.center_x = 750 + 85 * (i % 5)
+            resource.center_y = 700 - 85 * (i // 5)
         
 
     def on_draw(self):
@@ -34,3 +34,10 @@ class InventoryView(arcade.View):
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.E:
             self.window.show_view(self.window.game_view)
+
+        if symbol == arcade.key.Q:
+            print(self.window._mouse_x)
+            print(self.window._mouse_y)
+
+
+

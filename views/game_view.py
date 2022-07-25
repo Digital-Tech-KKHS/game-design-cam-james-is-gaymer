@@ -1,5 +1,6 @@
 import math
 import random
+from turtle import onclick
 
 import arcade
 from pyglet.math import Vec2
@@ -137,7 +138,7 @@ class TestGame(arcade.View):
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
 
-            self.spawn_enemy()
+#            self.spawn_enemy()
 
 
             self.spawn_meteor()
