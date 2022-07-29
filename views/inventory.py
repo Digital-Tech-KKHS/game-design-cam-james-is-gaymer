@@ -1,3 +1,4 @@
+from tkinter import Y
 import arcade
 from pyglet.math import Vec2
 from const import *
@@ -13,7 +14,7 @@ class InventoryView(arcade.View):
     def on_show(self):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        self.layout = arcade.gui.UIBoxLayout()
+
 
         self.inventory_grid = arcade.Sprite("assets\inventory_grid.png", 5)
         self.inventory_grid.center_x = WIDTH/2
@@ -22,7 +23,12 @@ class InventoryView(arcade.View):
         for i, resource in enumerate(self.window.resources):
             resource.center_x = 750 + 85 * (i % 5)
             resource.center_y = 700 - 85 * (i // 5)
-        
+
+            item_button = arcade.gui.UIFlatButton(resource.center_x, resource.center_y - 16*5, 16*5, 16*5, str(self.window.resources[i]))
+            self.manager.add(item_button)
+
+
+
 
     def on_draw(self):
         arcade.start_render()
