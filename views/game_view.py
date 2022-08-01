@@ -348,8 +348,10 @@ class TestGame(arcade.View):
 
                     prize = self.get_drop()
                     if prize:
-                        prize.center_x = meteor.center_x
-                        prize.center_y = meteor.center_y
+                        prize.center_x = meteor.center_x + random.randint(-50, 50)
+                        prize.center_y = meteor.center_y + random.randint(-50, 50)
+                        # prize.change_x = random.randint(-2, 2)
+                        # prize.change_y = random.randint(-2, 2)
                         self.scene["scrap"].append(prize)
                     meteor.kill()
 

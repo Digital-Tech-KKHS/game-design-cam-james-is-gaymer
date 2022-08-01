@@ -23,8 +23,8 @@ class InventoryView(arcade.View):
         for i, resource in enumerate(self.window.resources):
             resource.center_x = 750 + 85 * (i % 5)
             resource.center_y = 700 - 85 * (i // 5)
-
-            item_button = arcade.gui.UIFlatButton(resource.center_x, resource.center_y - 16*5, 16*5, 16*5, str(self.window.resources[i]))
+            print(i)
+            item_button = arcade.gui.UITextureButton(resource.center_x - 11, resource.center_y - 16*5 + 6, 16*5, 16*5, arcade.load_texture(resource.main_path), scale= 5)
             self.manager.add(item_button)
 
 
