@@ -429,3 +429,4 @@ class TestGame(arcade.View):
                 self.scene["scrap"].remove(drop)
                 self.window.resources.append(drop)
 
+

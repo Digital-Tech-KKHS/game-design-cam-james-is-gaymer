@@ -11,7 +11,6 @@ class GameWindow(arcade.Window):
         self.inventory = InventoryView()
 
         self.resources = arcade.SpriteList()
-
 window = GameWindow(WIDTH, HEIGHT, TITLE)
 window.show_view(window.game_view)
 arcade.run()

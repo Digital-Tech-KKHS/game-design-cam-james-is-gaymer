@@ -12,21 +12,7 @@ class InventoryView(arcade.View):
         self.camera = arcade.Camera()
     
     def on_show(self):
-        self.manager = arcade.gui.UIManager()
-        self.manager.enable()
-
-
-        self.inventory_grid = arcade.Sprite("assets\inventory_grid.png", 5)
-        self.inventory_grid.center_x = WIDTH/2
-        self.inventory_grid.center_y = HEIGHT/2
-
-        for i, resource in enumerate(self.window.resources):
-            resource.center_x = 750 + 85 * (i % 5)
-            resource.center_y = 700 - 85 * (i // 5)
-            print(i)
-            item_button = arcade.gui.UITextureButton(resource.center_x - 11, resource.center_y - 16*5 + 6, 16*5, 16*5, arcade.load_texture(resource.main_path), scale= 5)
-            self.manager.add(item_button)
-
+        self.button_refresh()
 
 
 
@@ -45,5 +31,32 @@ class InventoryView(arcade.View):
             print(self.window._mouse_x)
             print(self.window._mouse_y)
 
+    def on_click_resource(self, event):
+        self.window.resources.remove(event.source.resource)
+        event.source.resource.center_x = self.window.game_view.player_sprite.center_x + 50
+        event.source.resource.center_y = self.window.game_view.player_sprite.center_y + 50
+        self.window.game_view.scene["scrap"].append(event.source.resource)
+        
+        
+        self.button_refresh()
 
+
+    def button_refresh(self):
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+
+        self.inventory_grid = arcade.Sprite("assets\inventory_grid.png", 5)
+        self.inventory_grid.center_x = WIDTH/2
+        self.inventory_grid.center_y = HEIGHT/2
+
+        for i, resource in enumerate(self.window.resources):
+            x = 740 + 85 * (i % 5)
+            y = 635 - 85 * (i // 5)
+            print(i)
+            item_button = arcade.gui.UITextureButton(x, y, 16*5, 16*5, arcade.load_texture(resource.main_path), scale= 5)
+            self.manager.add(item_button)
+
+            item_button.on_click = self.on_click_resource
+            item_button.resource = resource
 
