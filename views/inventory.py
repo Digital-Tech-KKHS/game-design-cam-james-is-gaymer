@@ -45,14 +45,13 @@ class InventoryView(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-
         self.inventory_grid = arcade.Sprite("assets\inventory_grid.png", 5)
-        self.inventory_grid.center_x = WIDTH/2
-        self.inventory_grid.center_y = HEIGHT/2
+        self.inventory_grid.center_x = 250
+        self.inventory_grid.center_y = 750
 
         for i, resource in enumerate(self.window.resources):
-            x = 740 + 85 * (i % 5)
-            y = 635 - 85 * (i // 5)
+            x = self.inventory_grid.center_x - 210 + 85 * (i % 5)
+            y = self.inventory_grid.center_y + 135 - 85 * (i // 5)
             print(i)
             item_button = arcade.gui.UITextureButton(x, y, 16*5, 16*5, arcade.load_texture(resource.main_path), scale= 5)
             self.manager.add(item_button)
