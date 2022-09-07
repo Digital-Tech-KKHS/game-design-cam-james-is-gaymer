@@ -14,8 +14,6 @@ class InventoryView(arcade.View):
     def on_show(self):
         self.button_refresh()
 
-
-
     def on_draw(self):
         arcade.start_render()
         self.camera.use()
@@ -40,7 +38,6 @@ class InventoryView(arcade.View):
         
         self.button_refresh()
 
-
     def button_refresh(self):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
@@ -58,4 +55,7 @@ class InventoryView(arcade.View):
 
             item_button.on_click = self.on_click_resource
             item_button.resource = resource
+
+        screwdriver_button = arcade.gui.UITextureButton(20,250, 16*5, 16*5, arcade.load_texture("./assets/screwdriver.png"), scale = 5)
+        self.manager.add(screwdriver_button)
 
