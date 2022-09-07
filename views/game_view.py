@@ -5,14 +5,12 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
-from const import WIDTH
-from const import HEIGHT
 from views.collectables import *
 from views.collectables import ScrapCopper
 
 from .entity import BasicEnemy, Bullet, Rock, Scrap
 from views.inventory import InventoryView
-from arcade.experimental import Shadertoy
+from explosion import Explosion
 
 
 
@@ -48,9 +46,6 @@ class TestGame(arcade.View):
 
         self.time = 0.0
         self.reset = 0.0
-        shader_file_path_2 = 'explosion.glsl'
-        self.shadertoy_2 = Shadertoy(size=(WIDTH, HEIGHT), main_source=open(shader_file_path_2).read())
-        self.exploed = False
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -118,12 +113,6 @@ class TestGame(arcade.View):
 
         self.scene.draw()
 
-        self.pos = (self.window.mouse_x + self.camera.position[0]), (self.window.mouse_y + self.camera.position[1])
-        self.shadertoy_2.program['pos'] = self.pos
-        if self.exploed:                   
-            self.shadertoy_2.render(time=self.time)              
-            self.exploed = False
-            self.reset = 0.0
     def on_update(self, delta_time):
         self.scene.update()
 
@@ -139,10 +128,6 @@ class TestGame(arcade.View):
 
             for rocks in self.scene["rocks"]:
                 enemy.flee(rocks.pos, 300)
-
-        if self.exploed:
-            self.time += delta_time
-            self.reset += delta_time
 
         self.center_camera()
 
@@ -321,8 +306,10 @@ class TestGame(arcade.View):
             self.scene["bullets"].append(bullet)
         if self.gun_select == 2:
             self.laser_on = True
+
         
-        self.exploed = True
+        
+
 
         
 
@@ -374,10 +361,6 @@ class TestGame(arcade.View):
                         self.scene["scrap"].append(prize)
                     meteor.kill()
 
-
-    def on_mouse_release(self, *args, **kwargs):
-        self.laser_on = False
-
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
         for rock in self.scene["rocks"]:
@@ -426,6 +409,8 @@ class TestGame(arcade.View):
             for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:
+                    bob = Explosion((WIDTH, HEIGHT), (bullet.center_x, bullet.center_y))
+                    
                     bullet.kill()
                     zombie.kill()
 
