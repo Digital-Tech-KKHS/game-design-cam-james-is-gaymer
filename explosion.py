@@ -9,12 +9,13 @@ class Explosion:
         self.shadertoy_2.program['pos'] = position
         self.time = 0.0
         self.shadertoy_2.render(time=self.time)
-        print("DKBHS")
+        
   
 
     def update(self, delta_time):
         self.time += delta_time
+        
 
-    #def render(self):
-         
-        #print("KIHUUIGUB")
+    def draw(self):
+        self.shadertoy_2.render(time=self.time)
+        

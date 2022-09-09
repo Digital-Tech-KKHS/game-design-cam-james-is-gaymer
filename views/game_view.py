@@ -46,6 +46,8 @@ class TestGame(arcade.View):
 
         self.time = 0.0
         self.reset = 0.0
+
+        self.explosion = []
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -113,6 +115,11 @@ class TestGame(arcade.View):
 
         self.scene.draw()
 
+        for explosion in self.explosion:
+            explosion.draw()
+
+
+
     def on_update(self, delta_time):
         self.scene.update()
 
@@ -128,7 +135,13 @@ class TestGame(arcade.View):
 
             for rocks in self.scene["rocks"]:
                 enemy.flee(rocks.pos, 300)
-
+        for explosion in self.explosion:
+            explosion.update(delta_time)
+        # going over list backwards due itterating over same list and if it goes forwards it will miss variables
+        for i in range(len(self.explosion), 0, -1):
+            g = self.explosion[i]
+            if g.time >= 2.0:
+                self.explosion.remove()
         self.center_camera()
 
         self.meteor_kill()
@@ -409,8 +422,10 @@ class TestGame(arcade.View):
             for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:
-                    bob = Explosion((WIDTH, HEIGHT), (bullet.center_x, bullet.center_y))
+                    collision = Explosion((WIDTH, HEIGHT), (bullet.center_x - self.camera.position[0], bullet.center_y - self.camera.position[1]))
+                    self.explosion.append(collision)
                     
+
                     bullet.kill()
                     zombie.kill()
 
