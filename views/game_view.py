@@ -139,8 +139,8 @@ class TestGame(arcade.View):
             explosion.update(delta_time)
         # going over list backwards due itterating over same list and if it goes forwards it will miss variables
         for i in range(len(self.explosion), 0, -1):
-            g = self.explosion[i]
-            if g.time >= 2.0:
+            collision = self.explosion[i]
+            if collision.time >= 2.0:
                 self.explosion.remove()
         self.center_camera()
 
