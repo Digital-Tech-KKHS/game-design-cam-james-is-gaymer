@@ -1,8 +1,10 @@
+from msilib.schema import UIText
 from tkinter import Y
 import arcade
 from pyglet.math import Vec2
 from const import *
 import arcade.gui
+from .collectables import ScrapSteel, ScrapCopper, Acid
 
 class InventoryView(arcade.View):
     def __init__(self, window: arcade.Window = None):
@@ -35,8 +37,27 @@ class InventoryView(arcade.View):
         event.source.resource.center_y = self.window.game_view.player_sprite.center_y + 50
         self.window.game_view.scene["scrap"].append(event.source.resource)
         
-        
         self.button_refresh()
+
+    def on_click_screwdriver(self, event):
+        steel = 0
+        copper = 0
+        acid = 0
+        if self.window.screwdriver == False:
+            for resource in self.window.resources:
+                print(resource)
+                if isinstance(resource, ScrapSteel):
+                    steel += 1                    
+                if isinstance(resource, ScrapCopper):
+                    copper += 1
+                if isinstance(resource, Acid):
+                    acid += 1
+            if steel >= 5 and copper >= 5 and acid >= 5:
+                print("win")
+            else:
+                print("no")
+            
+
 
     def button_refresh(self):
         self.manager = arcade.gui.UIManager()
@@ -56,6 +77,10 @@ class InventoryView(arcade.View):
             item_button.on_click = self.on_click_resource
             item_button.resource = resource
 
-        screwdriver_button = arcade.gui.UITextureButton(20,250, 16*5, 16*5, arcade.load_texture("./assets/screwdriver.png"), scale = 5)
+        screwdriver_button = arcade.gui.UITextureButton(600,800, 16*5, 16*5, arcade.load_texture("./assets/screwdriver.png"), scale = 5)
         self.manager.add(screwdriver_button)
+
+        screwdriver_button.on_click = self.on_click_screwdriver
+
+        
 
