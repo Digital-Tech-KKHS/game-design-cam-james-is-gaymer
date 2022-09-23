@@ -5,13 +5,12 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
+from explosion import Explosion
 from views.collectables import *
 from views.collectables import ScrapCopper
+from views.inventory import InventoryView
 
 from .entity import BasicEnemy, Bullet, Rock, Scrap
-from views.inventory import InventoryView
-from explosion import Explosion
-
 
 
 class TestGame(arcade.View):
@@ -118,8 +117,6 @@ class TestGame(arcade.View):
         for explosion in self.explosion:
             explosion.draw()
 
-
-
     def on_update(self, delta_time):
         self.scene.update()
 
@@ -137,11 +134,9 @@ class TestGame(arcade.View):
                 enemy.flee(rocks.pos, 300)
         for explosion in self.explosion:
             explosion.update(delta_time)
-        # going over list backwards due itterating over same list and if it goes forwards it will miss variables
-        for i in range(len(self.explosion), 0, -1):
-            collision = self.explosion[i]
-            if collision.time >= 2.0:
-                self.explosion.remove()
+            if explosion.time >= 2.0:
+                self.explosion.remove(explosion)
+
         self.center_camera()
 
         self.meteor_kill()
@@ -154,7 +149,6 @@ class TestGame(arcade.View):
         if self.time_between_spawn >= self.spawn_time:
 
             self.spawn_enemy()
-
 
             self.spawn_meteor()
             self.time_between_spawn = 0
@@ -309,7 +303,7 @@ class TestGame(arcade.View):
             mouse_pos = Vec2(x, y)
             mouse_pos += self.camera.position
             speed = mouse_pos - player_pos
-            scaled_speed = speed.from_magnitude(MAX_SPEED)
+            scaled_speed = speed.from_magnitude(BULLET_MAX_SPEED)
             bullet = Bullet()
             bullet.center_x = self.player_sprite.center_x
             bullet.center_y = self.player_sprite.center_y
@@ -319,12 +313,6 @@ class TestGame(arcade.View):
             self.scene["bullets"].append(bullet)
         if self.gun_select == 2:
             self.laser_on = True
-
-        
-        
-
-
-        
 
     def fire_laser(self):
         x = self.window._mouse_x
@@ -422,9 +410,14 @@ class TestGame(arcade.View):
             for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:
-                    collision = Explosion((WIDTH, HEIGHT), (bullet.center_x - self.camera.position[0], bullet.center_y - self.camera.position[1]))
+                    collision = Explosion(
+                        (WIDTH, HEIGHT),
+                        (
+                            bullet.center_x - self.camera.position[0],
+                            bullet.center_y - self.camera.position[1],
+                        ),
+                    )
                     self.explosion.append(collision)
-                    
 
                     bullet.kill()
                     zombie.kill()
