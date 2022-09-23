@@ -149,9 +149,7 @@ class TestGame(arcade.View):
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
 
-
             self.spawn_enemy()
-
 
             self.spawn_meteor()
             self.time_between_spawn = 0
@@ -367,10 +365,8 @@ class TestGame(arcade.View):
                         self.scene["scrap"].append(prize)
                     meteor.kill()
 
-
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
-
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
