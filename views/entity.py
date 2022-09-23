@@ -13,13 +13,10 @@ class Entity(arcade.Sprite):
 
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
-        
-
 
     @property
     def pos(self):
         return Vec2(self.center_x, self.center_y)
-
 
 
 class Debris(Entity):
@@ -45,11 +42,8 @@ class Rock(Debris):
         self.rock_mass = (self.rock_area * self.scale) * METEOR_MASS
         self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT
 
-
-
     def take_damage(self):
         self.rock_health -= PLAYER_MINING_LASER_DAMAGE
-
 
 
 class Bullet(Entity):
@@ -65,7 +59,7 @@ class Vehicle(Entity):
         self.vel = Vec2()
         self.net = Vec2()
         self.forces = []
-        self.max_speed = MAX_SPEED
+        self.max_speed = ENEMY_MAX_SPEED
         self.max_force = 10000
         self.body: arcade.PymunkPhysicsObject = None
 
@@ -82,7 +76,6 @@ class Vehicle(Entity):
             self.physics_body.angle = Vec2(
                 self.physics_body.velocity[0], self.physics_body.velocity[1]
             ).heading
-
 
         self.forces = []
         self.net = 0

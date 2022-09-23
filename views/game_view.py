@@ -5,12 +5,12 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
+from explosion import Explosion
 from views.collectables import *
 from views.collectables import ScrapCopper
-
-from .entity import BasicEnemy, Bullet, Rock, Scrap
 from views.inventory import InventoryView
 
+from .entity import BasicEnemy, Bullet, Rock, Scrap
 
 
 class TestGame(arcade.View):
@@ -43,6 +43,10 @@ class TestGame(arcade.View):
         self.scrap_copper = int
         self.acid = int
 
+        self.time = 0.0
+        self.reset = 0.0
+
+        self.explosion = []
         arcade.set_background_color(arcade.color.BLACK)
 
         self.setup()
@@ -110,6 +114,9 @@ class TestGame(arcade.View):
 
         self.scene.draw()
 
+        for explosion in self.explosion:
+            explosion.draw()
+
     def on_update(self, delta_time):
         self.scene.update()
 
@@ -125,6 +132,10 @@ class TestGame(arcade.View):
 
             for rocks in self.scene["rocks"]:
                 enemy.flee(rocks.pos, 300)
+        for explosion in self.explosion:
+            explosion.update(delta_time)
+            if explosion.time >= 2.0:
+                self.explosion.remove(explosion)
 
         self.center_camera()
 
@@ -138,7 +149,6 @@ class TestGame(arcade.View):
         if self.time_between_spawn >= self.spawn_time:
 
             self.spawn_enemy()
-
 
             self.spawn_meteor()
             self.time_between_spawn = 0
@@ -293,7 +303,7 @@ class TestGame(arcade.View):
             mouse_pos = Vec2(x, y)
             mouse_pos += self.camera.position
             speed = mouse_pos - player_pos
-            scaled_speed = speed.from_magnitude(MAX_SPEED)
+            scaled_speed = speed.from_magnitude(BULLET_MAX_SPEED)
             bullet = Bullet()
             bullet.center_x = self.player_sprite.center_x
             bullet.center_y = self.player_sprite.center_y
@@ -352,10 +362,6 @@ class TestGame(arcade.View):
                         self.scene["scrap"].append(prize)
                     meteor.kill()
 
-
-    def on_mouse_release(self, *args, **kwargs):
-        self.laser_on = False
-
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
         for rock in self.scene["rocks"]:
@@ -404,6 +410,15 @@ class TestGame(arcade.View):
             for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:
+                    collision = Explosion(
+                        (WIDTH, HEIGHT),
+                        (
+                            bullet.center_x - self.camera.position[0],
+                            bullet.center_y - self.camera.position[1],
+                        ),
+                    )
+                    self.explosion.append(collision)
+
                     bullet.kill()
                     zombie.kill()
 
