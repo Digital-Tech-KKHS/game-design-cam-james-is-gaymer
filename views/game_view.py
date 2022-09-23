@@ -1,5 +1,6 @@
 import math
 import random
+from turtle import onclick
 
 import arcade
 from pyglet.math import Vec2
@@ -357,10 +358,15 @@ class TestGame(arcade.View):
 
                     prize = self.get_drop()
                     if prize:
-                        prize.center_x = meteor.center_x
-                        prize.center_y = meteor.center_y
+                        prize.center_x = meteor.center_x + random.randint(-50, 50)
+                        prize.center_y = meteor.center_y + random.randint(-50, 50)
+                        # prize.change_x = random.randint(-2, 2)
+                        # prize.change_y = random.randint(-2, 2)
                         self.scene["scrap"].append(prize)
                     meteor.kill()
+
+    def on_mouse_release(self, *args, **kwargs):
+        self.laser_on = False
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
@@ -437,14 +443,9 @@ class TestGame(arcade.View):
     def pick_up(self):
 
         for drop in self.scene["scrap"]:
-            drop_list = arcade.check_for_collision(self.player_sprite, drop)
-            if drop_list:
-                if type(drop) == ScrapSteel:
-                    drop.kill()
-                    self.scrap_steel += 1
-                elif type(drop) == ScrapCopper:
-                    drop.kill()
-                    self.scrap_copper += 1
-                elif type(drop) == Acid:
-                    drop.kill()
-                    self.acid += 1
+            if (
+                arcade.check_for_collision(self.player_sprite, drop)
+                and len(self.window.resources) < 25
+            ):
+                self.scene["scrap"].remove(drop)
+                self.window.resources.append(drop)

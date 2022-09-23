@@ -105,9 +105,3 @@ class Enemy(Vehicle):
 class BasicEnemy(Enemy):
     def __init__(self, name_file):
         super().__init__("enemy_idle")
-
-    def update_animation(self, delta_time: float = 1 / 60):
-        if self.change_x > 0 and self.facing_direction == LEFT_FACING:
-            self.facing_direction = RIGHT_FACING
-        if self.change_x < 0 and self.facing_direction == RIGHT_FACING:
-            self.facing_direction = LEFT_FACING

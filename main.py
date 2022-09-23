@@ -11,6 +11,10 @@ class GameWindow(arcade.Window):
         self.game_view = TestGame()
         self.inventory = InventoryView()
 
+        self.screwdriver = False
+
+        self.resources = arcade.SpriteList()
+
 
 window = GameWindow(WIDTH, HEIGHT, TITLE)
 window.show_view(window.game_view)
