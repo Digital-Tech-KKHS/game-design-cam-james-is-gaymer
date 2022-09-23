@@ -18,6 +18,7 @@ class ScrapCopper(arcade.Sprite):
     def __repr__(self):
         return "Copper"
 
+
 class Acid(arcade.Sprite):
     def __init__(self):
         self.main_path = "assets/drop_3.png"

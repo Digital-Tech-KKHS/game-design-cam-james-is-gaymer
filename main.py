@@ -4,6 +4,7 @@ from const import *
 from views.game_view import TestGame
 from views.inventory import InventoryView
 
+
 class GameWindow(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
@@ -13,6 +14,8 @@ class GameWindow(arcade.Window):
         self.screwdriver = False
 
         self.resources = arcade.SpriteList()
+
+
 window = GameWindow(WIDTH, HEIGHT, TITLE)
 window.show_view(window.game_view)
 arcade.run()

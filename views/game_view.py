@@ -8,10 +8,9 @@ from pyglet.math import Vec2
 from const import *
 from views.collectables import *
 from views.collectables import ScrapCopper
-
-from .entity import BasicEnemy, Bullet, Rock, Scrap
 from views.inventory import InventoryView
 
+from .entity import BasicEnemy, Bullet, Rock, Scrap
 
 
 class TestGame(arcade.View):
@@ -138,8 +137,7 @@ class TestGame(arcade.View):
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
 
-#            self.spawn_enemy()
-
+            #            self.spawn_enemy()
 
             self.spawn_meteor()
             self.time_between_spawn = 0
@@ -355,7 +353,6 @@ class TestGame(arcade.View):
                         self.scene["scrap"].append(prize)
                     meteor.kill()
 
-
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
 
@@ -425,8 +422,9 @@ class TestGame(arcade.View):
     def pick_up(self):
 
         for drop in self.scene["scrap"]:
-            if arcade.check_for_collision(self.player_sprite, drop) and len(self.window.resources) < 25:
+            if (
+                arcade.check_for_collision(self.player_sprite, drop)
+                and len(self.window.resources) < 25
+            ):
                 self.scene["scrap"].remove(drop)
                 self.window.resources.append(drop)
-
-
