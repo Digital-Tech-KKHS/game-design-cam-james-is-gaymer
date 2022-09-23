@@ -59,7 +59,7 @@ class Vehicle(Entity):
         self.vel = Vec2()
         self.net = Vec2()
         self.forces = []
-        self.max_speed = MAX_SPEED
+        self.max_speed = ENEMY_MAX_SPEED
         self.max_force = 10000
         self.body: arcade.PymunkPhysicsObject = None
 

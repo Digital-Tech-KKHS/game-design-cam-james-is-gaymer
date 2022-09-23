@@ -7,7 +7,9 @@ from pyglet.math import Vec2
 
 from const import *
 
+
 from .collectables import Acid, ScrapCopper, ScrapSteel
+
 
 
 class InventoryView(arcade.View):
@@ -18,7 +20,9 @@ class InventoryView(arcade.View):
         self.camera = arcade.Camera()
 
     def on_show(self):
+
         self.button_refresh()
+
 
     def on_draw(self):
         arcade.start_render()
@@ -30,6 +34,7 @@ class InventoryView(arcade.View):
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.E:
             self.window.show_view(self.window.game_view)
+
 
         if symbol == arcade.key.Q:
             print(self.window._mouse_x)
@@ -96,3 +101,4 @@ class InventoryView(arcade.View):
         self.manager.add(screwdriver_button)
 
         screwdriver_button.on_click = self.on_click_screwdriver
+
