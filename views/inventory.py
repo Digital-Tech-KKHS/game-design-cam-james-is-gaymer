@@ -48,9 +48,9 @@ class InventoryView(arcade.View):
         self.button_refresh()
 
     def on_click_screwdriver(self, event):
-        steel = 11
-        copper = 8
-        acid = 7
+        steel = 0
+        copper = 0
+        acid = 0
         if self.window.screwdriver == False:
             for resource in self.window.resources:
                 print(resource)
@@ -60,7 +60,7 @@ class InventoryView(arcade.View):
                     copper += 1
                 if isinstance(resource, Acid):
                     acid += 1
-            if steel >= 5 and copper >= 5 and acid >= 5:
+            if steel >= 11 and copper >= 8 and acid >= 6:
                 print("win")
             else:
                 print("no")
