@@ -14,6 +14,7 @@ from .collectables import Acid, ScrapCopper, ScrapSteel
 class InventoryView(arcade.View):
     """inventory and crafting"""
     def __init__(self, window: arcade.Window = None):
+        """initializer"""
         super().__init__(window)
 
         self.inventory_grid = None

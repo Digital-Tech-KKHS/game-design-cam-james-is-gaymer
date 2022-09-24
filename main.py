@@ -9,6 +9,7 @@ from views.inventory import InventoryView
 class GameWindow(arcade.Window):
     """creates window for game to be run from"""
     def __init__(self, width, height, title):
+        """initializer"""
         super().__init__(width, height, title)
 
         # creates views
