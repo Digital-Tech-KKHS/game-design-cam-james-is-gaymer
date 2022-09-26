@@ -12,7 +12,7 @@ from views.collectables import *
 from views.collectables import ScrapCopper
 from views.inventory import InventoryView
 
-from .entity import BasicEnemy, Bullet, Rock, Scrap
+from .entity import BasicEnemy, Bullet, Rock
 
 
 class TestGame(arcade.View):
