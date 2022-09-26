@@ -1,5 +1,5 @@
 # import needed things
-import math
+
 import random
 
 import arcade

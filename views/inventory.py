@@ -1,10 +1,10 @@
 # import needed things
-from msilib.schema import UIText
-from tkinter import Y
+
+
 
 import arcade
 import arcade.gui
-from pyglet.math import Vec2
+
 
 from const import *
 

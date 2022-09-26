@@ -1,7 +1,7 @@
 # import needed things
 import math
 import random
-from turtle import onclick
+
 
 import arcade
 from pyglet.math import Vec2
@@ -10,7 +10,7 @@ from const import *
 from explosion import Explosion
 from views.collectables import *
 from views.collectables import ScrapCopper
-from views.inventory import InventoryView
+
 
 from .entity import BasicEnemy, Bullet, Rock
 
