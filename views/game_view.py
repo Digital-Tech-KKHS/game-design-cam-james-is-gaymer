@@ -1,17 +1,15 @@
 import math
 import random
-from turtle import onclick
+
 
 import arcade
 from pyglet.math import Vec2
 
 from const import *
-from explosion import Explosion
-from views.collectables import *
-from views.collectables import ScrapCopper
-from views.inventory import InventoryView
-
-from .entity import BasicEnemy, Bullet, Rock, Scrap
+from game_play.explosion import Explosion
+from game_play.collectables import *
+from game_play.inventory import InventoryView
+from game_play.entity import *
 
 
 class TestGame(arcade.View):
@@ -46,6 +44,10 @@ class TestGame(arcade.View):
 
         self.time = 0.0
         self.reset = 0.0
+        self.player_health = PLAYER_HEALTH
+        self.color = arcade.color.GREEN
+        self.time_between_hit = 0.1
+        self.last_hit = 0.0
 
         self.explosion = []
         arcade.set_background_color(arcade.color.BLACK)
@@ -53,7 +55,6 @@ class TestGame(arcade.View):
         self.setup()
 
     def setup(self):
-
         self.scene = arcade.Scene()
         self.scene.add_sprite_list("bullets")
         self.scene.add_sprite_list("mining_laser")
@@ -118,6 +119,14 @@ class TestGame(arcade.View):
         for explosion in self.explosion:
             explosion.draw()
 
+        arcade.draw_rectangle_filled(
+            self.camera.position[0] - (WIDTH / 2),
+            (self.camera.position[1] + (HEIGHT / 2)) - 50,
+            self.player_health,
+            15,
+            self.color,
+        )
+
     def on_update(self, delta_time):
         self.scene.update()
 
@@ -137,12 +146,17 @@ class TestGame(arcade.View):
             explosion.update(delta_time)
             if explosion.time >= 2.0:
                 self.explosion.remove(explosion)
+        self.last_hit += delta_time
+
+        if self.player_health >= 50:
+            self.color = arcade.color.RED
 
         self.center_camera()
 
         self.meteor_kill()
 
         self.bullet_kill()
+        self.enemy()
 
         self.pick_up()
 
@@ -159,6 +173,10 @@ class TestGame(arcade.View):
         self.physics_engine.step()
         if self.laser_on:
             self.fire_laser()
+
+        if self.player_health <= 0:
+            print("YOU LOST")
+            exit()
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
@@ -428,7 +446,7 @@ class TestGame(arcade.View):
                     bullet.kill()
                     zombie.kill()
 
-    def enemy_kill(self):
+    def enemy(self):
         player_pos = self.player_body._get_position()
         for enemy in self.scene["zombie"]:
             if enemy.center_x >= (player_pos[0] + 4100) or enemy.center_x <= (
@@ -439,6 +457,11 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
+            collision = arcade.check_for_collision(enemy, self.player_sprite)
+            if self.last_hit >= self.time_between_hit:
+                if collision:
+                    self.player_health -= 5
+                    
 
     def pick_up(self):
 

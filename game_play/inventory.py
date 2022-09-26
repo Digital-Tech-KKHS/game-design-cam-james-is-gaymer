@@ -7,7 +7,7 @@ from pyglet.math import Vec2
 
 from const import *
 
-from .collectables import Acid, ScrapCopper, ScrapSteel
+from game_play.collectables import Acid, ScrapCopper, ScrapSteel
 
 
 class InventoryView(arcade.View):
