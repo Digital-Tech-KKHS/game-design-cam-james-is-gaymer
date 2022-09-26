@@ -1,14 +1,14 @@
 import arcade
 
 from const import *
+from game_play.inventory import InventoryView
+from views.controls import Controls
+from views.death import Death
 from views.game_view import TestGame
+from views.pause import Pause
 from views.start import StartView
 from views.story import Story
 from views.win import Win
-from views.death import Death
-from views.controls import Controls
-from views.pause import Pause
-from game_play.inventory import InventoryView
 
 
 class GameWindow(arcade.Window):

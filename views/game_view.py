@@ -1,15 +1,14 @@
 import math
 import random
 
-
 import arcade
 from pyglet.math import Vec2
 
 from const import *
-from game_play.explosion import Explosion
 from game_play.collectables import *
-from game_play.inventory import InventoryView
 from game_play.entity import *
+from game_play.explosion import Explosion
+from game_play.inventory import InventoryView
 
 
 class TestGame(arcade.View):
@@ -461,7 +460,6 @@ class TestGame(arcade.View):
             if self.last_hit >= self.time_between_hit:
                 if collision:
                     self.player_health -= 5
-                    
 
     def pick_up(self):
 

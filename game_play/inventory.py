@@ -6,7 +6,6 @@ import arcade.gui
 from pyglet.math import Vec2
 
 from const import *
-
 from game_play.collectables import Acid, ScrapCopper, ScrapSteel
 
 
