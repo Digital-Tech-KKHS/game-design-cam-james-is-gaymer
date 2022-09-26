@@ -45,8 +45,7 @@ class TestGame(arcade.View):
         self.reset = 0.0
         self.player_health = PLAYER_HEALTH
         self.color = arcade.color.GREEN
-        self.time_between_hit = 0.1
-        self.last_hit = 0.0
+
 
         self.explosion = []
         arcade.set_background_color(arcade.color.BLACK)
@@ -117,14 +116,16 @@ class TestGame(arcade.View):
 
         for explosion in self.explosion:
             explosion.draw()
-
+        
+        player_pos = self.player_body._get_position()
         arcade.draw_rectangle_filled(
-            self.camera.position[0] - (WIDTH / 2),
-            (self.camera.position[1] + (HEIGHT / 2)) - 50,
-            self.player_health,
+            player_pos[0],
+            player_pos[1] -480,
+            self.player_health / 3,
             15,
-            self.color,
+            (255,0,0),
         )
+        
 
     def on_update(self, delta_time):
         self.scene.update()
@@ -145,7 +146,6 @@ class TestGame(arcade.View):
             explosion.update(delta_time)
             if explosion.time >= 2.0:
                 self.explosion.remove(explosion)
-        self.last_hit += delta_time
 
         if self.player_health >= 50:
             self.color = arcade.color.RED
@@ -457,9 +457,9 @@ class TestGame(arcade.View):
             ):
                 enemy.kill()
             collision = arcade.check_for_collision(enemy, self.player_sprite)
-            if self.last_hit >= self.time_between_hit:
-                if collision:
-                    self.player_health -= 5
+
+            if collision:
+                self.player_health -= 5
 
     def pick_up(self):
 
