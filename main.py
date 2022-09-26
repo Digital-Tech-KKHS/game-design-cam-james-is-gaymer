@@ -26,8 +26,8 @@ class GameWindow(arcade.Window):
         self.screwdriver = False
 
         self.resources = arcade.SpriteList()
+        self.show_view(self.start_view)
 
 
 window = GameWindow(WIDTH, HEIGHT, TITLE)
-window.show_view(window.game_view)
 arcade.run()

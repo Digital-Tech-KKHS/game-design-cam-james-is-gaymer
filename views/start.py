@@ -12,7 +12,7 @@ class StartView(arcade.View):
 
     def on_draw(self):
         """draws text for view"""
-        arcade.start_render()
+        self.clear()
         arcade.draw_text(
             "Space Zombie Survival",
             600,
@@ -30,12 +30,10 @@ class StartView(arcade.View):
             font_size=20,
             anchor_x="center",
         )
-        arcade.finish_render()
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
         if key == arcade.key.ENTER:
             # self.window.show_view(self.window.story_view)
-            game = self.window.game_view
-            game.setup()
-            self.window.show_view(game)
+            
+            self.window.show_view(self.window.game_view)
