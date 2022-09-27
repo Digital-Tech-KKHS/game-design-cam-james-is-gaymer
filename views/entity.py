@@ -6,13 +6,22 @@ from PIL import Image
 from pyglet.math import Vec2
 
 from const import *
+RIGHT = 0
+LEFT = 1
 
+def load_texture_pair(filename):
+    return [
+        arcade.load_texture(filename),
+        arcade.load_texture(filename, flipped_horizontally=True),
+    ]
 
 class Entity(arcade.Sprite):
     def __init__(self, name_file):
 
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
+        self.cur_texture = 0
+        self.facing = RIGHT
 
     @property
     def pos(self):
@@ -100,8 +109,17 @@ class Enemy(Vehicle):
     def __init__(self, name_file):
         super().__init__(name_file)
         self.scale = ENEMY_SCALEING
+        self.enemy_texures = []
+        for i in range(4):
+            load_texture_pair(f"{name_file}{i}.png")
+    
+    def update_animation(self, delta_time: float = 1 / 60):
+        self.cur_texture += 1
+        if self.cur_texture > 4:
+            self.cur_texture = 0
+        self.texture = self.enemy_texures[self.cur_texture][self.facing]
 
 
 class BasicEnemy(Enemy):
     def __init__(self, name_file):
-        super().__init__("enemy_idle")
+        super().__init__("enemy")
