@@ -37,4 +37,6 @@ class Win(arcade.View):
         if key == arcade.key.ENTER:
             # self.window.show_view(self.window.story_view)
             self.window.game_view.__init__()
+
+            self.window.resources.clear()
             self.window.show_view(self.window.start_view)

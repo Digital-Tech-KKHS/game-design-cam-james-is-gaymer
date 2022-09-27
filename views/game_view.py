@@ -147,7 +147,7 @@ class TestGame(arcade.View):
             if explosion.time >= 2.0:
                 self.explosion.remove(explosion)
 
-        if self.player_health >= 50:
+        if self.player_health <= 100:
             self.color = arcade.color.RED
 
         self.center_camera()
@@ -181,7 +181,7 @@ class TestGame(arcade.View):
         # retreives player position so it can spawn enemies
         player_pos = self.player_body._get_position()
 
-        if len(self.scene["zombie"]) < 20:
+        if len(self.scene["zombie"]) < 10:
 
             while True:
                 enemy = BasicEnemy("enemy")

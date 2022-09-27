@@ -23,7 +23,7 @@ class Pause(arcade.View):
         )
 
         arcade.draw_text(
-            "Press Esc to Return to game",
+            "Press Left SHIFT to Return to game",
             WIDTH / 2,
             HEIGHT / 2 - 75,
             arcade.color.WHITE,
@@ -31,7 +31,7 @@ class Pause(arcade.View):
             anchor_x="center",
         )
         arcade.draw_text(
-            "Press Enter to Return to controls help",
+            "Press Enter to got to controls help",
             WIDTH / 2,
             HEIGHT / 2 - 150,
             arcade.color.WHITE,
@@ -41,7 +41,7 @@ class Pause(arcade.View):
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
-        if key == arcade.key.ESCAPE:
+        if key == arcade.key.LSHIFT:
             # self.window.show_view(self.window.story_view)
             self.window.show_view(self.window.game_view)
         if key == arcade.key.ENTER:

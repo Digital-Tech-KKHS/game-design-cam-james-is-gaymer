@@ -71,7 +71,7 @@ class Controls(arcade.View):
         )
 
         arcade.draw_text(
-            "Press Esc to return to pause",
+            "Press Left SHIFT to return to pause",
             WIDTH / 2,
             HEIGHT / 2 - 75,
             arcade.color.WHITE,
@@ -82,7 +82,7 @@ class Controls(arcade.View):
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
-        if key == arcade.key.ESCAPE:
+        if key == arcade.key.LSHIFT:
             # self.window.show_view(self.window.story_view)
 
             self.window.show_view(self.window.pause_view)
