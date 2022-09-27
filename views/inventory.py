@@ -62,6 +62,7 @@ class InventoryView(arcade.View):
                     acid += 1
             if steel >= 11 and copper >= 8 and acid >= 6:
                 print("win")
+                self.window.show_view(self.window.win_view)
             else:
                 print("no")
 

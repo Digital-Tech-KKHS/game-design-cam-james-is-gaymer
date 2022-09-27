@@ -12,7 +12,7 @@ class Story(arcade.View):
 
     def on_draw(self):
         """draws text for view"""
-        arcade.start_render()
+        self.clear()
         arcade.draw_text(
             "Story",
             600,
@@ -30,7 +30,7 @@ class Story(arcade.View):
             font_size=20,
             anchor_x="center",
         )
-        arcade.finish_render()
+
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""

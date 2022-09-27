@@ -12,7 +12,7 @@ class Win(arcade.View):
 
     def on_draw(self):
         """draws text for view"""
-        arcade.start_render()
+        self.clear()
         arcade.draw_text(
             "You Have WON",
             600,
@@ -30,11 +30,11 @@ class Win(arcade.View):
             font_size=20,
             anchor_x="center",
         )
-        arcade.finish_render()
+
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
         if key == arcade.key.ENTER:
             # self.window.show_view(self.window.story_view)
-
+            self.window.game_view.__init__()
             self.window.show_view(self.window.start_view)

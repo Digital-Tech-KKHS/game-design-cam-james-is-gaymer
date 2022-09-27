@@ -8,7 +8,7 @@ from const import *
 from game_play.collectables import *
 from game_play.entity import *
 from game_play.explosion import Explosion
-from game_play.inventory import InventoryView
+from views.inventory import InventoryView
 
 
 class TestGame(arcade.View):
@@ -123,7 +123,7 @@ class TestGame(arcade.View):
             player_pos[1] -480,
             self.player_health / 3,
             15,
-            (255,0,0),
+            self.color,
         )
         
 
@@ -175,7 +175,7 @@ class TestGame(arcade.View):
 
         if self.player_health <= 0:
             print("YOU LOST")
-            exit()
+            self.window.show_view(self.window.death_view)
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
@@ -274,6 +274,8 @@ class TestGame(arcade.View):
             self.gun_select = 2
         if key == arcade.key.E:
             self.window.show_view(self.window.inventory)
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(self.window.pause_view)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:

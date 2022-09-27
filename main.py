@@ -1,7 +1,7 @@
 import arcade
 
 from const import *
-from game_play.inventory import InventoryView
+from views.inventory import InventoryView
 from views.controls import Controls
 from views.death import Death
 from views.game_view import TestGame

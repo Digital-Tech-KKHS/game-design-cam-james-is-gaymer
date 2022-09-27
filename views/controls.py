@@ -12,7 +12,7 @@ class Controls(arcade.View):
 
     def on_draw(self):
         """draws text for view"""
-        arcade.start_render()
+        self.clear()
         arcade.draw_text(
             "W = Move UP",
             WIDTH / 2,
@@ -71,18 +71,18 @@ class Controls(arcade.View):
         )
 
         arcade.draw_text(
-            "Press Enter to return to pause",
+            "Press Esc to return to pause",
             WIDTH / 2,
             HEIGHT / 2 - 75,
             arcade.color.WHITE,
             font_size=20,
             anchor_x="center",
         )
-        arcade.finish_render()
+
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
-        if key == arcade.key.ENTER:
+        if key == arcade.key.ESCAPE:
             # self.window.show_view(self.window.story_view)
 
             self.window.show_view(self.window.pause_view)
