@@ -15,7 +15,7 @@ class Pause(arcade.View):
         self.clear()
         arcade.draw_text(
             "PAUSE",
-            600,
+            WIDTH/2,
             HEIGHT - 400,
             arcade.color.WHITE,
             font_size=50,

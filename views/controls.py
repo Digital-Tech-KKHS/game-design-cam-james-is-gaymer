@@ -16,7 +16,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "W = Move UP",
             WIDTH / 2,
-            HEIGHT - 400,
+            HEIGHT - 100,
             arcade.color.WHITE,
             font_size=50,
             anchor_x="center",
@@ -24,7 +24,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "S = Move DOWN",
             WIDTH / 2,
-            HEIGHT - 450,
+            HEIGHT - 200,
             arcade.color.WHITE,
             font_size=50,
             anchor_x="center",
@@ -32,7 +32,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "A = Move LEFT",
             WIDTH / 2,
-            HEIGHT - 500,
+            HEIGHT - 300,
             arcade.color.WHITE,
             font_size=50,
             anchor_x="center",
@@ -40,7 +40,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "D = Move RIGHT",
             WIDTH / 2,
-            HEIGHT - 550,
+            HEIGHT - 400,
             arcade.color.WHITE,
             font_size=50,
             anchor_x="center",
@@ -48,7 +48,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "1 = Bombardment Bullet",
             WIDTH / 2,
-            HEIGHT - 600,
+            HEIGHT - 500,
             arcade.color.WHITE,
             font_size=50,
             anchor_x="center",
@@ -56,7 +56,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "2 = Mining Laser",
             WIDTH / 2,
-            HEIGHT - 650,
+            HEIGHT - 600,
             arcade.color.WHITE,
             font_size=50,
             anchor_x="center",
@@ -73,7 +73,7 @@ class Controls(arcade.View):
         arcade.draw_text(
             "Press Left SHIFT to return to pause",
             WIDTH / 2,
-            HEIGHT / 2 - 75,
+            HEIGHT / 2 - 780,
             arcade.color.WHITE,
             font_size=20,
             anchor_x="center",
