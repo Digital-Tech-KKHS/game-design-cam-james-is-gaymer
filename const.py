@@ -1,6 +1,6 @@
 WIDTH = 1900
 HEIGHT = 1000
-TITLE = "test"
+TITLE = "Zombie Survival for Screwdriver"
 
 CHARACTER_SCAILING = 2
 

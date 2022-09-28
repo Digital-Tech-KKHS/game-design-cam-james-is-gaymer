@@ -1,10 +1,10 @@
 import arcade
 
 from const import *
-from views.inventory import InventoryView
 from views.controls import Controls
 from views.death import Death
 from views.game_view import TestGame
+from views.inventory import InventoryView
 from views.pause import Pause
 from views.start import StartView
 from views.story import Story

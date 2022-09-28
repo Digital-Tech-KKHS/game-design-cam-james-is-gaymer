@@ -35,5 +35,4 @@ class StartView(arcade.View):
         """runs when key is pressed"""
         if key == arcade.key.ENTER:
 
-            
             self.window.show_view(self.window.story_view)

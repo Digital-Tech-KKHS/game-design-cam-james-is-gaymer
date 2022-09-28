@@ -31,7 +31,6 @@ class Story(arcade.View):
             anchor_x="center",
         )
 
-
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
         if key == arcade.key.ENTER:

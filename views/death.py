@@ -31,10 +31,9 @@ class Death(arcade.View):
             anchor_x="center",
         )
 
-
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
         if key == arcade.key.ENTER:
             # self.window.show_view(self.window.story_view)
-            self.window.game_view.__init__()   
+            self.window.game_view.__init__()
             self.window.show_view(self.window.game_view)
