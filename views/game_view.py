@@ -9,9 +9,8 @@ from const import *
 from explosion import Explosion
 from views.collectables import *
 from views.collectables import ScrapCopper
-from views.inventory import InventoryView
 
-from .entity import BasicEnemy, Bullet, Rock, Scrap
+from .entity import BasicEnemy, Bullet, Rock
 
 
 class TestGame(arcade.View):
@@ -160,7 +159,7 @@ class TestGame(arcade.View):
         if self.laser_on:
             self.fire_laser()
         
-        self.scene.update_animation()
+        self.scene.update_animation(1/60)
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies

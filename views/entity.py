@@ -20,7 +20,7 @@ class Entity(arcade.Sprite):
 
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
-        self.cur_texture = 0
+        self.cur_texture = 1
         self.facing = RIGHT
 
     @property
@@ -111,12 +111,12 @@ class Enemy(Vehicle):
         self.scale = ENEMY_SCALEING
         self.enemy_texures = []
         for i in range(4):
-            load_texture_pair(f"{name_file}{i}.png")
+            load_texture_pair(f"assets/{name_file}{i + 1}.png")
     
     def update_animation(self, delta_time: float = 1 / 60):
         self.cur_texture += 1
         if self.cur_texture > 4:
-            self.cur_texture = 0
+            self.cur_texture = 1
         self.texture = self.enemy_texures[self.cur_texture][self.facing]
 
 
