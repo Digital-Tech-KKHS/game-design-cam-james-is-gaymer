@@ -2,7 +2,7 @@ import arcade
 
 from const import *
 from const import HEIGHT
-from game_play.explosion import Explosion
+
 
 
 class Win(arcade.View):
@@ -33,7 +33,7 @@ class Win(arcade.View):
             anchor_x="center",
         )
 
-        self.Explosion((WIDTH, HEIGHT), ((WIDTH / 2), (HEIGHT / 2)))
+
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""
