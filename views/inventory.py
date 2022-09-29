@@ -1,6 +1,3 @@
-
-
-
 import arcade
 import arcade.gui
 from pyglet.math import Vec2

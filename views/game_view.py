@@ -62,7 +62,7 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("zombie")
         self.scene.add_sprite_list("scrap")
 
-        self.background = arcade.load_texture('assets/background.png')
+        self.background = arcade.load_texture("assets/background.png")
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -113,12 +113,17 @@ class TestGame(arcade.View):
     def on_draw(self):
         self.clear()
 
-        arcade.draw_lrwh_rectangle_textured(self.camera.position[0], self.camera.position[1], WIDTH, HEIGHT, self.background)
+        arcade.draw_lrwh_rectangle_textured(
+            self.camera.position[0],
+            self.camera.position[1],
+            WIDTH,
+            HEIGHT,
+            self.background,
+        )
 
         self.camera.use()
 
         self.scene.draw()
-
 
         for explosion in self.explosion:
             explosion.draw()
@@ -333,15 +338,14 @@ class TestGame(arcade.View):
             bullet_body = self.physics_engine.get_physics_object(bullet).body
             bullet_body._set_velocity(scaled_speed)
             self.scene["bullets"].append(bullet)
-            laser_sound = arcade.load_sound('assets/laserShoot.wav')
+            laser_sound = arcade.load_sound("assets/laserShoot.wav")
             arcade.play_sound(laser_sound, volume=0.5)
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.laser_on = True
             if self.laser_sound == 0:
-                laser_sound = arcade.load_sound('assets/laser.wav')
+                laser_sound = arcade.load_sound("assets/laser.wav")
                 arcade.play_sound(laser_sound, volume=0.5)
                 self.laser_sound = 1
-            
 
     def fire_laser(self):
         x = self.window._mouse_x
@@ -355,7 +359,7 @@ class TestGame(arcade.View):
         diff_x += self.camera.position[0]
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
-        
+
         keep_going = True
         for i in range(50):
 
@@ -392,7 +396,7 @@ class TestGame(arcade.View):
                         # prize.change_x = random.randint(-2, 2)
                         # prize.change_y = random.randint(-2, 2)
                         self.scene["scrap"].append(prize)
-                    explosion_sound = arcade.load_sound('assets/explosion.wav')
+                    explosion_sound = arcade.load_sound("assets/explosion.wav")
                     arcade.play_sound(explosion_sound, volume=0.3)
                     meteor.kill()
 
@@ -423,8 +427,8 @@ class TestGame(arcade.View):
             return random.choice(common)
 
     def bullet_kill(self):
-        
-        enemy_explosion = arcade.load_sound('assets/explosion_enemy.wav')
+
+        enemy_explosion = arcade.load_sound("assets/explosion_enemy.wav")
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
             collision = arcade.check_for_collision_with_list(
@@ -454,7 +458,6 @@ class TestGame(arcade.View):
                     arcade.play_sound(enemy_explosion, volume=0.5)
                     bullet.kill()
                     zombie.kill()
-
 
     def enemy(self):
         player_pos = self.player_body._get_position()
