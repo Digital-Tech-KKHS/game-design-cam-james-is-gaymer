@@ -1,5 +1,5 @@
-from msilib.schema import UIText
-from tkinter import Y
+
+
 
 import arcade
 import arcade.gui
