@@ -49,6 +49,8 @@ class TestGame(arcade.View):
         self.explosion = []
         self.background = None
 
+        self.laser_sound = 0
+
         self.setup()
 
     def setup(self):
@@ -335,6 +337,11 @@ class TestGame(arcade.View):
             arcade.play_sound(laser_sound, volume=0.5)
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.laser_on = True
+            if self.laser_sound == 0:
+                laser_sound = arcade.load_sound('assets/laser.wav')
+                arcade.play_sound(laser_sound, volume=0.5)
+                self.laser_sound = 1
+            
 
     def fire_laser(self):
         x = self.window._mouse_x
@@ -348,6 +355,7 @@ class TestGame(arcade.View):
         diff_x += self.camera.position[0]
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
+        
         keep_going = True
         for i in range(50):
 
@@ -390,6 +398,7 @@ class TestGame(arcade.View):
 
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
+        self.laser_sound = 0
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
