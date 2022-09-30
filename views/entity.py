@@ -106,6 +106,7 @@ class Enemy(Vehicle):
         self.scale = ENEMY_SCALEING
         self.enemy_texures = []
         self.odo = 0
+        # loads animation 
         for i in range(4):            
             self.enemy_texures.append(arcade.load_texture(f"assets/{name_file}{i + 1}.png"))
     
@@ -113,7 +114,7 @@ class Enemy(Vehicle):
         self.odo += 1
         if self.odo < 10:
             return 
-            
+
         self.odo = 0
         self.cur_texture += 1
         if self.cur_texture > 3:
