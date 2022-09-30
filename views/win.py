@@ -4,7 +4,6 @@ from const import *
 from const import HEIGHT
 
 
-
 class Win(arcade.View):
     """shown when game is first started"""
 
@@ -32,8 +31,6 @@ class Win(arcade.View):
             font_size=20,
             anchor_x="center",
         )
-
-
 
     def on_key_press(self, key, _modifiers):
         """runs when key is pressed"""

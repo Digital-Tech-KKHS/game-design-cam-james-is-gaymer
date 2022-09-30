@@ -15,7 +15,7 @@ class Story(arcade.View):
         self.clear()
         arcade.draw_text(
             "You need:\n-8 copper\n-11 steel\n-6 acid drops\nGOOOOOO! and craft the average screwdriver",
-            WIDTH/2,
+            WIDTH / 2,
             500,
             arcade.color.WHITE,
             font_size=25,
