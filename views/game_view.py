@@ -2,7 +2,6 @@
 import math
 import random
 
-
 import arcade
 from pyglet.math import Vec2
 
@@ -11,12 +10,12 @@ from explosion import Explosion
 from views.collectables import *
 from views.collectables import ScrapCopper
 
-
 from .entity import BasicEnemy, Bullet, Rock
 
 
 class TestGame(arcade.View):
     """view for ingame"""
+
     def __init__(self):
         """initializer"""
         super().__init__()
@@ -105,7 +104,7 @@ class TestGame(arcade.View):
         self.acid = 0
 
         # adds player sprite to physics engine
-        # gets player body so code can find variables 
+        # gets player body so code can find variables
         # on player body speed and posistion
         self.physics_engine.add_sprite(
             self.player_sprite,
@@ -174,7 +173,7 @@ class TestGame(arcade.View):
 
         self.pick_up()
 
-       # spawns meteor and enemies 
+        # spawns meteor and enemies
         self.time_between_spawn += delta_time
         if self.time_between_spawn >= self.spawn_time:
 
@@ -196,7 +195,7 @@ class TestGame(arcade.View):
 
         # makes sure not too many enemies
         if len(self.scene["zombie"]) < 20:
-            
+
             # creates enemy
             while True:
                 enemy = BasicEnemy("enemy")
@@ -218,7 +217,7 @@ class TestGame(arcade.View):
                     < self.camera.position[1] + HEIGHT + 50
                 ):
 
-                # adds enemy to relevant lists
+                    # adds enemy to relevant lists
                     self.scene["zombie"].append(enemy)
 
                     self.physics_engine.add_sprite(
@@ -232,7 +231,7 @@ class TestGame(arcade.View):
         player_pos = self.player_body._get_position()
         # makes sure not too many meteors
         if len(self.scene["rocks"]) < 200:
-            
+
             # creates meteor
             while True:
                 meteor = Rock("meteor")
@@ -257,7 +256,7 @@ class TestGame(arcade.View):
                     < meteor.center_y
                     < self.camera.position[1] + HEIGHT + 50
                 ):
-                # adds meteor to scene
+                    # adds meteor to scene
                     self.scene["rocks"].append(meteor)
 
                     # runs function in rock class to find image width and height
@@ -408,7 +407,7 @@ class TestGame(arcade.View):
                 rocklist = arcade.check_for_collision_with_list(
                     laser, self.scene["rocks"]
                 )
-            #places contact sprite when contact between asteroid and laser is made
+            # places contact sprite when contact between asteroid and laser is made
             if rocklist:
 
                 contact = arcade.Sprite(image_source2)
@@ -418,7 +417,7 @@ class TestGame(arcade.View):
                 contact.alpha = laser.alpha
                 self.scene["mining_laser"].append(contact)
                 keep_going = False
-            #allows metero to be mined and to drop scrap items
+            # allows metero to be mined and to drop scrap items
             for meteor in rocklist:
 
                 meteor.take_damage()
@@ -432,14 +431,13 @@ class TestGame(arcade.View):
                     meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
-        """_when mouse button released it will not allow laser to keep firing
-        """
+        """_when mouse button released it will not allow laser to keep firing"""
 
         self.laser_on = False
 
     def meteor_kill(self):
         """kills meteor when outside of set boundary around player"""
-        
+
         # ....
         player_pos = self.player_body._get_position()
         for rock in self.scene["rocks"]:
@@ -462,9 +460,9 @@ class TestGame(arcade.View):
             return
         if 0.6 <= drop_choice > 0.8:
             return random.choice(common)
+
     def bullet_kill(self):
         """checks for collisions of bullet with other physics bodies"""
-
 
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
@@ -473,7 +471,7 @@ class TestGame(arcade.View):
             )
             for b in collision:
                 bullet.kill()
-            #kills bullet if out of bounds from player
+            # kills bullet if out of bounds from player
             if bullet.center_x >= (player_pos[0] + WIDTH) or bullet.center_x <= (
                 player_pos[0] - WIDTH
             ):
@@ -482,7 +480,7 @@ class TestGame(arcade.View):
                 player_pos[1] - HEIGHT
             ):
                 bullet.kill()
-            #kills zombie if collision with bullet and zombie true and runs explosion shader
+            # kills zombie if collision with bullet and zombie true and runs explosion shader
             for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:

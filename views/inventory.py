@@ -1,10 +1,8 @@
 # import needed things
 
 
-
 import arcade
 import arcade.gui
-
 
 from const import *
 
@@ -13,6 +11,7 @@ from .collectables import Acid, ScrapCopper, ScrapSteel
 
 class InventoryView(arcade.View):
     """inventory and crafting"""
+
     def __init__(self, window: arcade.Window = None):
         """initializer"""
         super().__init__(window)
@@ -42,7 +41,7 @@ class InventoryView(arcade.View):
         """removes an item when it is clicked"""
         # removes the resource from stored inventory
         self.window.resources.remove(event.source.resource)
-        
+
         # adds it back to the game
         event.source.resource.center_x = (
             self.window.game_view.player_sprite.center_x + 50

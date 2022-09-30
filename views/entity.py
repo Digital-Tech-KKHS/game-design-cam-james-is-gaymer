@@ -11,6 +11,7 @@ from const import *
 
 class Entity(arcade.Sprite):
     """class for all sprites"""
+
     def __init__(self, name_file):
         """initializer"""
         main_path = f"assets/{name_file}.png"
@@ -24,6 +25,7 @@ class Entity(arcade.Sprite):
 
 class Debris(Entity):
     """class for all space debris"""
+
     def __init__(self, name_file):
         """initializer"""
         super().__init__(name_file)
@@ -31,11 +33,9 @@ class Debris(Entity):
         self.scale = random.randint(1, 10)
 
 
-
-
-
 class Rock(Debris):
     """class for meteors"""
+
     def __init__(self, name_file):
         """initializer"""
         # chooses meteor type
@@ -49,12 +49,13 @@ class Rock(Debris):
         self.rock_health = (self.rock_area * self.scale) * METEOR_HEALTH_CONSTANT
 
     def take_damage(self):
-        """decreases rock health when """
+        """decreases rock health when"""
         self.rock_health -= PLAYER_MINING_LASER_DAMAGE
 
 
 class Bullet(Entity):
     """class for bulets"""
+
     def __init__(self):
         """initializer"""
         super().__init__(name_file="bullet")
@@ -62,6 +63,7 @@ class Bullet(Entity):
 
 class Vehicle(Entity):
     """class for ai"""
+
     def __init__(self, name_file):
         """initializer"""
         super().__init__(name_file)
@@ -126,6 +128,7 @@ class Vehicle(Entity):
 
 class Enemy(Vehicle):
     """class for all enemies"""
+
     def __init__(self, name_file):
         """initializer"""
         super().__init__(name_file)

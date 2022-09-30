@@ -3,6 +3,7 @@ import arcade
 
 class ScrapSteel(arcade.Sprite):
     """class for steel"""
+
     def __init__(self):
         """initializer"""
         # sets image
@@ -16,12 +17,13 @@ class ScrapSteel(arcade.Sprite):
 
 class ScrapCopper(arcade.Sprite):
     """class for copper"""
+
     def __init__(self):
         """initializer"""
         # sets image
         self.main_path = "assets/drop_2.png"
         super().__init__(self.main_path)
-        
+
     def __repr__(self):
         """sets name to 'Copper'"""
         return "Copper"
@@ -29,6 +31,7 @@ class ScrapCopper(arcade.Sprite):
 
 class Acid(arcade.Sprite):
     """class for acid"""
+
     def __init__(self):
         """initializer"""
         # sets image
