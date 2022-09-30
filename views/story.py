@@ -14,11 +14,11 @@ class Story(arcade.View):
         """draws text for view"""
         self.clear()
         arcade.draw_text(
-            "Story",
-            600,
-            HEIGHT - 400,
+            "You need:\n-8 copper\n-11 steel\n-6 acid drops\nGOOOOOO! and craft the average screwdriver",
+            WIDTH/2,
+            500,
             arcade.color.WHITE,
-            font_size=50,
+            font_size=25,
             anchor_x="center",
         )
 
