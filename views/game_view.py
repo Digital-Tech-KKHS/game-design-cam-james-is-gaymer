@@ -408,7 +408,7 @@ class TestGame(arcade.View):
                 rocklist = arcade.check_for_collision_with_list(
                     laser, self.scene["rocks"]
                 )
-                # ...
+            #places contact sprite when contact between asteroid and laser is made
             if rocklist:
 
                 contact = arcade.Sprite(image_source2)
@@ -418,7 +418,7 @@ class TestGame(arcade.View):
                 contact.alpha = laser.alpha
                 self.scene["mining_laser"].append(contact)
                 keep_going = False
-
+            #allows metero to be mined and to drop scrap items
             for meteor in rocklist:
 
                 meteor.take_damage()
@@ -428,18 +428,18 @@ class TestGame(arcade.View):
                     if prize:
                         prize.center_x = meteor.center_x + random.randint(-50, 50)
                         prize.center_y = meteor.center_y + random.randint(-50, 50)
-                        # prize.change_x = random.randint(-2, 2)
-                        # prize.change_y = random.randint(-2, 2)
                         self.scene["scrap"].append(prize)
                     meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
-        """"""
-        # ....
+        """_when mouse button released it will not allow laser to keep firing
+        """
+
         self.laser_on = False
 
     def meteor_kill(self):
-        """"""
+        """kills meteor when outside of set boundary around player"""
+        
         # ....
         player_pos = self.player_body._get_position()
         for rock in self.scene["rocks"]:
@@ -456,23 +456,16 @@ class TestGame(arcade.View):
         """decides the drops from meteors"""
         # possible drops
         common = [ScrapSteel(), ScrapCopper(), Acid()]
-        #rare = ["assets/drop_4.png"]
-        #legendary = ["assets/drop_5.png"]
         # picks drop
         drop_choice = random.random()
         if drop_choice < 0.6:
             return
         if 0.6 <= drop_choice > 0.8:
             return random.choice(common)
-        # elif 0.8 <= drop_choice > 0.95:
-        #     choice = rare
-        #     return choice
-        # elif 0.95 <= drop_choice >= 1:
-        #     choice = legendary
-        #     return choice
-
     def bullet_kill(self):
-        """"""
+        """checks for collisions of bullet with other physics bodies"""
+
+
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
             collision = arcade.check_for_collision_with_list(
@@ -480,6 +473,7 @@ class TestGame(arcade.View):
             )
             for b in collision:
                 bullet.kill()
+            #kills bullet if out of bounds from player
             if bullet.center_x >= (player_pos[0] + WIDTH) or bullet.center_x <= (
                 player_pos[0] - WIDTH
             ):
@@ -488,6 +482,7 @@ class TestGame(arcade.View):
                 player_pos[1] - HEIGHT
             ):
                 bullet.kill()
+            #kills zombie if collision with bullet and zombie true and runs explosion shader
             for zombie in self.scene["zombie"]:
                 good_collision = arcade.check_for_collision(bullet, zombie)
                 if good_collision:
@@ -504,7 +499,7 @@ class TestGame(arcade.View):
                     zombie.kill()
 
     def enemy_kill(self):
-        """"""
+        """kills enemy when outside of set boundary from player"""
         player_pos = self.player_body._get_position()
         for enemy in self.scene["zombie"]:
             if enemy.center_x >= (player_pos[0] + 4100) or enemy.center_x <= (
