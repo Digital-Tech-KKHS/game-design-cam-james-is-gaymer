@@ -1,13 +1,9 @@
-from msilib.schema import UIText
-from tkinter import Y
-
 import arcade
 import arcade.gui
 from pyglet.math import Vec2
 
 from const import *
-
-from .collectables import Acid, ScrapCopper, ScrapSteel
+from game_play.collectables import Acid, ScrapCopper, ScrapSteel
 
 
 class InventoryView(arcade.View):
@@ -63,6 +59,7 @@ class InventoryView(arcade.View):
                     acid += 1
             if steel >= 11 and copper >= 8 and acid >= 6:
                 print("win")
+                self.window.show_view(self.window.win_view)
             else:
                 print("no")
 
