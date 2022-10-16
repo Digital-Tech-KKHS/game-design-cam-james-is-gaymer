@@ -5,20 +5,12 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
-<<<<<<< HEAD
-from explosion import Explosion
-from views.collectables import *
-from views.collectables import ScrapCopper
-
-from .entity import BasicEnemy, Bullet, Rock
-
-=======
 from game_play.collectables import *
 from game_play.entity import *
 from game_play.explosion import Explosion
 from views.inventory import InventoryView
 
->>>>>>> 3c582d7a176e1f2534fb012c9d67d189313c54d3
+
 
 class TestGame(arcade.View):
     def __init__(self):
@@ -192,13 +184,13 @@ class TestGame(arcade.View):
         if self.laser_on:
             self.fire_laser()
 
-<<<<<<< HEAD
+
         self.scene.update_animation(1 / 60)
-=======
+
         if self.player_health <= 0:
             print("YOU LOST")
             self.window.show_view(self.window.death_view)
->>>>>>> 3c582d7a176e1f2534fb012c9d67d189313c54d3
+
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
