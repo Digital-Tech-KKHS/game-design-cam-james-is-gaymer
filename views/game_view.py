@@ -183,6 +183,8 @@ class TestGame(arcade.View):
         if self.laser_on:
             self.fire_laser()
 
+        self.scene.update_animation(1 / 60)
+
         if self.player_health <= 0:
             print("YOU LOST")
             self.window.show_view(self.window.death_view)
