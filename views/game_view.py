@@ -139,7 +139,7 @@ class TestGame(arcade.View):
         # update scene
         self.scene.update()
 
-        # ...
+        # deletes laser so it doesnt stay on screen longer than needed
         self.scene["mining_laser"].clear()
 
         # runs player movement
@@ -158,13 +158,12 @@ class TestGame(arcade.View):
             for rocks in self.scene["rocks"]:
                 enemy.flee(rocks.pos, 300)
 
-        # ...
+        # stops rendering explosion shader when cycle of explosion is complete
         for explosion in self.explosion:
             explosion.update(delta_time)
             if explosion.time >= 2.0:
                 self.explosion.remove(explosion)
 
-        # ...
         self.center_camera()
 
         self.meteor_kill()
@@ -390,8 +389,8 @@ class TestGame(arcade.View):
         # finds the angle the laser is pointing too
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
-        # ...
         keep_going = True
+        #cycles 50 times to create length of laser 
         for i in range(50):
 
             if keep_going:
@@ -438,7 +437,6 @@ class TestGame(arcade.View):
     def meteor_kill(self):
         """kills meteor when outside of set boundary around player"""
 
-        # ....
         player_pos = self.player_body._get_position()
         for rock in self.scene["rocks"]:
             if rock.center_x >= (player_pos[0] + 4100) or rock.center_x <= (
