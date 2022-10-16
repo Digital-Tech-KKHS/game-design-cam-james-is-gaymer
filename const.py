@@ -1,12 +1,9 @@
-# window constants
 WIDTH = 1900
 HEIGHT = 1000
 TITLE = "Zombie Survival for Screwdriver"
 
-# sprite scale
 CHARACTER_SCAILING = 2
 
-# ...
 DEFAULT_DAMPNING = 1.0
 
 # player constants that will be implemented
@@ -29,10 +26,8 @@ METEOR_HEALTH_CONSTANT = 0.2
 ENEMY_SCALEING = 2
 
 
-# max speeds
 ENEMY_MAX_SPEED = 1500
-
 BULLET_MAX_SPEED = 2000
 
-# max amount of time between spawns
+
 MAX_SPAWN_TIME = 0.001
