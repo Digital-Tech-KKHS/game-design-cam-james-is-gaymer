@@ -161,4 +161,3 @@ class BasicEnemy(Enemy):
 
         """initializer"""
         super().__init__("enemy")
-

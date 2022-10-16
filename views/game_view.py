@@ -6,12 +6,10 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
-
 from game_play.collectables import *
 from game_play.entity import *
 from game_play.explosion import Explosion
 from views.inventory import InventoryView
-
 
 
 class TestGame(arcade.View):
@@ -347,7 +345,6 @@ class TestGame(arcade.View):
 
         """player bodies movement control"""
 
-
         # player bodies movement control
         # applies a force to the player body center and moves it in a
         # direction determined by force applied over 2d vectors
@@ -401,7 +398,6 @@ class TestGame(arcade.View):
             bullet_body._set_velocity(scaled_speed)
             # adds sprite to scene
             self.scene["bullets"].append(bullet)
-
 
             laser_sound = arcade.load_sound("assets/laserShoot.wav")
             arcade.play_sound(laser_sound, volume=0.5)
@@ -541,9 +537,6 @@ class TestGame(arcade.View):
                     arcade.play_sound(enemy_explosion, volume=0.5)
                     bullet.kill()
                     zombie.kill()
-
-
-
 
     def enemy(self):
         """kills enemy when outside of set boundary from player"""

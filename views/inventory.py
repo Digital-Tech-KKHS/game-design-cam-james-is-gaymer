@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 # import needed things
-
-
-=======
->>>>>>> master
 import arcade
 import arcade.gui
 
@@ -94,13 +89,8 @@ class InventoryView(arcade.View):
             # location of resource
             x = self.inventory_grid.center_x - 210 + 85 * (i % 5)
             y = self.inventory_grid.center_y + 135 - 85 * (i // 5)
-<<<<<<< HEAD
-            print(i)
 
             # creates resource buttons with functions
-=======
-
->>>>>>> master
             item_button = arcade.gui.UITextureButton(
                 x, y, 16 * 5, 16 * 5, arcade.load_texture(resource.main_path), scale=5
             )
