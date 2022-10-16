@@ -6,11 +6,12 @@ import arcade
 from pyglet.math import Vec2
 
 from const import *
-from explosion import Explosion
-from views.collectables import *
-from views.collectables import ScrapCopper
 
-from .entity import BasicEnemy, Bullet, Rock
+from game_play.collectables import *
+from game_play.entity import *
+from game_play.explosion import Explosion
+from views.inventory import InventoryView
+
 
 
 class TestGame(arcade.View):
@@ -54,9 +55,13 @@ class TestGame(arcade.View):
 
         self.time = 0.0
         self.reset = 0.0
+        self.player_health = PLAYER_HEALTH
+        self.color = arcade.color.GREEN
 
         self.explosion = []
-        arcade.set_background_color(arcade.color.BLACK)
+        self.background = None
+
+        self.laser_sound = 0
 
         self.setup()
 
@@ -72,6 +77,8 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
         self.scene.add_sprite_list("scrap")
+
+        self.background = arcade.load_texture("assets/background.png")
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -127,12 +134,29 @@ class TestGame(arcade.View):
         """draws game"""
         self.clear()
 
+        arcade.draw_lrwh_rectangle_textured(
+            self.camera.position[0],
+            self.camera.position[1],
+            WIDTH,
+            HEIGHT,
+            self.background,
+        )
+
         self.camera.use()
 
         self.scene.draw()
 
         for explosion in self.explosion:
             explosion.draw()
+
+        player_pos = self.player_body._get_position()
+        arcade.draw_rectangle_filled(
+            player_pos[0],
+            player_pos[1] - 480,
+            self.player_health / 3,
+            15,
+            self.color,
+        )
 
     def on_update(self, delta_time):
         """updates game"""
@@ -164,11 +188,15 @@ class TestGame(arcade.View):
             if explosion.time >= 2.0:
                 self.explosion.remove(explosion)
 
+        if self.player_health >= 50:
+            self.color = arcade.color.RED
+
         self.center_camera()
 
         self.meteor_kill()
 
         self.bullet_kill()
+        self.enemy()
 
         self.pick_up()
 
@@ -186,6 +214,12 @@ class TestGame(arcade.View):
         self.physics_engine.step()
         if self.laser_on:
             self.fire_laser()
+
+        self.scene.update_animation(1 / 60)
+
+        if self.player_health <= 0:
+            print("YOU LOST")
+            self.window.show_view(self.window.death_view)
 
     def spawn_enemy(self):
         """spawns enemy"""
@@ -291,14 +325,11 @@ class TestGame(arcade.View):
             self.accelerating_right = True
         if key == arcade.key.A:
             self.accelerating_left = True
-        # change guns
-        if key == arcade.key.KEY_1:
-            self.gun_select = 1
-        if key == arcade.key.KEY_2:
-            self.gun_select = 2
         # access inventory
         if key == arcade.key.E:
             self.window.show_view(self.window.inventory)
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(self.window.pause_view)
 
     def on_key_release(self, key, modifiers):
         """stops key commands"""
@@ -313,7 +344,11 @@ class TestGame(arcade.View):
             self.accelerating_left = False
 
     def player_movement(self):
+
         """player bodies movement control"""
+
+
+        # player bodies movement control
         # applies a force to the player body center and moves it in a
         # direction determined by force applied over 2d vectors
         if self.accelerating_right:
@@ -345,10 +380,11 @@ class TestGame(arcade.View):
         self.camera.move_to(player_centered)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+
         """runs when mouse is pressed"""
-        # gun 1 code
-        if self.gun_select == 1:
-            # finds the speed as a vector
+
+        if button == arcade.MOUSE_BUTTON_LEFT:
+
             player_pos = Vec2(self.player_sprite.center_x, self.player_sprite.center_y)
             mouse_pos = Vec2(x, y)
             mouse_pos += self.camera.position
@@ -365,10 +401,17 @@ class TestGame(arcade.View):
             bullet_body._set_velocity(scaled_speed)
             # adds sprite to scene
             self.scene["bullets"].append(bullet)
-        # gun 2 code
-        if self.gun_select == 2:
-            # ....
+
+
+            laser_sound = arcade.load_sound("assets/laserShoot.wav")
+            arcade.play_sound(laser_sound, volume=0.5)
+        if button == arcade.MOUSE_BUTTON_RIGHT:
+
             self.laser_on = True
+            if self.laser_sound == 0:
+                laser_sound = arcade.load_sound("assets/laser.wav")
+                arcade.play_sound(laser_sound, volume=0.5)
+                self.laser_sound = 1
 
     def fire_laser(self):
         """fires mining laser"""
@@ -389,6 +432,7 @@ class TestGame(arcade.View):
         # finds the angle the laser is pointing too
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
+
         keep_going = True
         # cycles 50 times to create length of laser
         for i in range(50):
@@ -427,12 +471,15 @@ class TestGame(arcade.View):
                         prize.center_x = meteor.center_x + random.randint(-50, 50)
                         prize.center_y = meteor.center_y + random.randint(-50, 50)
                         self.scene["scrap"].append(prize)
+                    explosion_sound = arcade.load_sound("assets/explosion.wav")
+                    arcade.play_sound(explosion_sound, volume=0.3)
                     meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
         """_when mouse button released it will not allow laser to keep firing"""
 
         self.laser_on = False
+        self.laser_sound = 0
 
     def meteor_kill(self):
         """kills meteor when outside of set boundary around player"""
@@ -462,6 +509,7 @@ class TestGame(arcade.View):
     def bullet_kill(self):
         """checks for collisions of bullet with other physics bodies"""
 
+        enemy_explosion = arcade.load_sound("assets/explosion_enemy.wav")
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
             collision = arcade.check_for_collision_with_list(
@@ -490,11 +538,14 @@ class TestGame(arcade.View):
                         ),
                     )
                     self.explosion.append(collision)
-
+                    arcade.play_sound(enemy_explosion, volume=0.5)
                     bullet.kill()
                     zombie.kill()
 
-    def enemy_kill(self):
+
+
+
+    def enemy(self):
         """kills enemy when outside of set boundary from player"""
         player_pos = self.player_body._get_position()
         for enemy in self.scene["zombie"]:
@@ -506,6 +557,10 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
+            collision = arcade.check_for_collision(enemy, self.player_sprite)
+
+            if collision:
+                self.player_health -= 5
 
     def pick_up(self):
         """picks up drops"""

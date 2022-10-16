@@ -1,7 +1,7 @@
 # window constants
 WIDTH = 1900
 HEIGHT = 1000
-TITLE = "test"
+TITLE = "Zombie Survival for Screwdriver"
 
 # sprite scale
 CHARACTER_SCAILING = 2
@@ -15,9 +15,10 @@ PLAYER_ACCELERATION = 6000
 PLAYER_DEACCELERATION = 0.02
 PLAYER_MASS = 20
 PLAYER_FRICTION = 0.2
-PLAYER_MAX_SPEED = 260
+PLAYER_MAX_SPEED = 320
 PLAYER_DAMPNING = 0.58
 PLAYER_MINING_LASER_DAMAGE = 1
+PLAYER_HEALTH = 1000
 
 # meteor constants settings for physics engine to use
 METOR_MAX_SPEED = 300000
@@ -27,8 +28,10 @@ METEOR_FRICTION = 0.8
 METEOR_HEALTH_CONSTANT = 0.2
 ENEMY_SCALEING = 2
 
+
 # max speeds
-ENEMY_MAX_SPEED = 2000
+ENEMY_MAX_SPEED = 1500
+
 BULLET_MAX_SPEED = 2000
 
 # max amount of time between spawns

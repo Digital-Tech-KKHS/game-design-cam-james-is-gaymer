@@ -1,12 +1,14 @@
+<<<<<<< HEAD
 # import needed things
 
 
+=======
+>>>>>>> master
 import arcade
 import arcade.gui
 
 from const import *
-
-from .collectables import Acid, ScrapCopper, ScrapSteel
+from game_play.collectables import Acid, ScrapCopper, ScrapSteel
 
 
 class InventoryView(arcade.View):
@@ -72,6 +74,7 @@ class InventoryView(arcade.View):
             # if the player has enough resources than they win game
             if steel >= 11 and copper >= 8 and acid >= 6:
                 print("win")
+                self.window.show_view(self.window.win_view)
             else:
                 print("no")
 
@@ -91,9 +94,13 @@ class InventoryView(arcade.View):
             # location of resource
             x = self.inventory_grid.center_x - 210 + 85 * (i % 5)
             y = self.inventory_grid.center_y + 135 - 85 * (i // 5)
+<<<<<<< HEAD
             print(i)
 
             # creates resource buttons with functions
+=======
+
+>>>>>>> master
             item_button = arcade.gui.UITextureButton(
                 x, y, 16 * 5, 16 * 5, arcade.load_texture(resource.main_path), scale=5
             )
