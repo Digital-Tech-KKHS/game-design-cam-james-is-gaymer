@@ -390,7 +390,7 @@ class TestGame(arcade.View):
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
         keep_going = True
-        #cycles 50 times to create length of laser 
+        # cycles 50 times to create length of laser
         for i in range(50):
 
             if keep_going:

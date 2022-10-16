@@ -4,8 +4,9 @@ from arcade.experimental import Shadertoy
 
 class Explosion:
     """runs explosion shader every time it is called"""
+
     def __init__(self, size, position):
-        """sets up shader and retrives needed parameters 
+        """sets up shader and retrives needed parameters
         from game to get right position on screen
         """
         shader_file_path_2 = "explosion.glsl"
@@ -15,11 +16,9 @@ class Explosion:
         self.shadertoy_2.render(time=self.time)
 
     def update(self, delta_time):
-        """allows shader to update and change each frame
-        """
+        """allows shader to update and change each frame"""
         self.time += delta_time
 
     def draw(self):
-        """draws shader on screen
-        """
+        """draws shader on screen"""
         self.shadertoy_2.render(time=self.time)
