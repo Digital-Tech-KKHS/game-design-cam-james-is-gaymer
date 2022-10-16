@@ -1,3 +1,4 @@
+# import needed things
 import arcade
 
 from const import *
@@ -12,8 +13,13 @@ from views.win import Win
 
 
 class GameWindow(arcade.Window):
+    """creates window for game to be run from"""
+
     def __init__(self, width, height, title):
+        """initializer"""
         super().__init__(width, height, title)
+
+        # creates views
         self.game_view = TestGame()
         self.start_view = StartView()
         self.story_view = Story()
@@ -23,11 +29,14 @@ class GameWindow(arcade.Window):
         self.controls_view = Controls()
         self.inventory = InventoryView()
 
+        # not needed
         self.screwdriver = False
 
+        # creates a sprite list to hold resources in inventory
         self.resources = arcade.SpriteList()
         self.show_view(self.start_view)
 
 
+# runs game
 window = GameWindow(WIDTH, HEIGHT, TITLE)
 arcade.run()
