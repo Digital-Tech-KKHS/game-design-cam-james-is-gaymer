@@ -158,8 +158,8 @@ class TestGame(arcade.View):
         self.physics_engine.step()
         if self.laser_on:
             self.fire_laser()
-        
-        self.scene.update_animation(1/60)
+
+        self.scene.update_animation(1 / 60)
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies

@@ -8,15 +8,12 @@ from pyglet.math import Vec2
 from const import *
 
 
-
-
 class Entity(arcade.Sprite):
     def __init__(self, name_file):
 
         main_path = f"assets/{name_file}.png"
         super().__init__(main_path)
         self.cur_texture = 0
-
 
     @property
     def pos(self):
@@ -106,14 +103,16 @@ class Enemy(Vehicle):
         self.scale = ENEMY_SCALEING
         self.enemy_texures = []
         self.odo = 0
-        # loads animation 
-        for i in range(4):            
-            self.enemy_texures.append(arcade.load_texture(f"assets/{name_file}{i + 1}.png"))
-    
+        # loads animation
+        for i in range(4):
+            self.enemy_texures.append(
+                arcade.load_texture(f"assets/{name_file}{i + 1}.png")
+            )
+
     def update_animation(self, delta_time: float = 1 / 60):
         self.odo += 1
         if self.odo < 10:
-            return 
+            return
 
         self.odo = 0
         self.cur_texture += 1
