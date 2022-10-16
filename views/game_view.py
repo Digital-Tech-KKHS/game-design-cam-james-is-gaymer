@@ -1,17 +1,24 @@
 import math
 import random
-from turtle import onclick
 
 import arcade
 from pyglet.math import Vec2
 
 from const import *
+<<<<<<< HEAD
 from explosion import Explosion
 from views.collectables import *
 from views.collectables import ScrapCopper
 
 from .entity import BasicEnemy, Bullet, Rock
 
+=======
+from game_play.collectables import *
+from game_play.entity import *
+from game_play.explosion import Explosion
+from views.inventory import InventoryView
+
+>>>>>>> 3c582d7a176e1f2534fb012c9d67d189313c54d3
 
 class TestGame(arcade.View):
     def __init__(self):
@@ -45,14 +52,17 @@ class TestGame(arcade.View):
 
         self.time = 0.0
         self.reset = 0.0
+        self.player_health = PLAYER_HEALTH
+        self.color = arcade.color.GREEN
 
         self.explosion = []
-        arcade.set_background_color(arcade.color.BLACK)
+        self.background = None
+
+        self.laser_sound = 0
 
         self.setup()
 
     def setup(self):
-
         self.scene = arcade.Scene()
         self.scene.add_sprite_list("bullets")
         self.scene.add_sprite_list("mining_laser")
@@ -60,6 +70,8 @@ class TestGame(arcade.View):
         self.scene.add_sprite_list("rocks")
         self.scene.add_sprite_list("zombie")
         self.scene.add_sprite_list("scrap")
+
+        self.background = arcade.load_texture("assets/background.png")
 
         # implementing of physics engine into code ready for sprites to be put in
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -110,12 +122,29 @@ class TestGame(arcade.View):
     def on_draw(self):
         self.clear()
 
+        arcade.draw_lrwh_rectangle_textured(
+            self.camera.position[0],
+            self.camera.position[1],
+            WIDTH,
+            HEIGHT,
+            self.background,
+        )
+
         self.camera.use()
 
         self.scene.draw()
 
         for explosion in self.explosion:
             explosion.draw()
+
+        player_pos = self.player_body._get_position()
+        arcade.draw_rectangle_filled(
+            player_pos[0],
+            player_pos[1] - 480,
+            self.player_health / 3,
+            15,
+            self.color,
+        )
 
     def on_update(self, delta_time):
         self.scene.update()
@@ -137,11 +166,15 @@ class TestGame(arcade.View):
             if explosion.time >= 2.0:
                 self.explosion.remove(explosion)
 
+        if self.player_health >= 50:
+            self.color = arcade.color.RED
+
         self.center_camera()
 
         self.meteor_kill()
 
         self.bullet_kill()
+        self.enemy()
 
         self.pick_up()
 
@@ -159,7 +192,13 @@ class TestGame(arcade.View):
         if self.laser_on:
             self.fire_laser()
 
+<<<<<<< HEAD
         self.scene.update_animation(1 / 60)
+=======
+        if self.player_health <= 0:
+            print("YOU LOST")
+            self.window.show_view(self.window.death_view)
+>>>>>>> 3c582d7a176e1f2534fb012c9d67d189313c54d3
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
@@ -252,12 +291,10 @@ class TestGame(arcade.View):
             self.accelerating_right = True
         if key == arcade.key.A:
             self.accelerating_left = True
-        if key == arcade.key.KEY_1:
-            self.gun_select = 1
-        if key == arcade.key.KEY_2:
-            self.gun_select = 2
         if key == arcade.key.E:
             self.window.show_view(self.window.inventory)
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(self.window.pause_view)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
@@ -270,6 +307,7 @@ class TestGame(arcade.View):
             self.accelerating_left = False
 
     def player_movement(self):
+
         # player bodies movement control
         # applies a force to the player body center and moves it in a
         # direction determined by force applied over 2d vectors
@@ -300,7 +338,7 @@ class TestGame(arcade.View):
         self.camera.move_to(player_centered)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        if self.gun_select == 1:
+        if button == arcade.MOUSE_BUTTON_LEFT:
             player_pos = Vec2(self.player_sprite.center_x, self.player_sprite.center_y)
             mouse_pos = Vec2(x, y)
             mouse_pos += self.camera.position
@@ -313,8 +351,14 @@ class TestGame(arcade.View):
             bullet_body = self.physics_engine.get_physics_object(bullet).body
             bullet_body._set_velocity(scaled_speed)
             self.scene["bullets"].append(bullet)
-        if self.gun_select == 2:
+            laser_sound = arcade.load_sound("assets/laserShoot.wav")
+            arcade.play_sound(laser_sound, volume=0.5)
+        if button == arcade.MOUSE_BUTTON_RIGHT:
             self.laser_on = True
+            if self.laser_sound == 0:
+                laser_sound = arcade.load_sound("assets/laser.wav")
+                arcade.play_sound(laser_sound, volume=0.5)
+                self.laser_sound = 1
 
     def fire_laser(self):
         x = self.window._mouse_x
@@ -328,6 +372,7 @@ class TestGame(arcade.View):
         diff_x += self.camera.position[0]
         angle_radians = math.atan2(diff_y, diff_x)
         angle_degrees = math.degrees(math.atan2(diff_y, diff_x)) + 90
+
         keep_going = True
         for i in range(50):
 
@@ -364,10 +409,13 @@ class TestGame(arcade.View):
                         # prize.change_x = random.randint(-2, 2)
                         # prize.change_y = random.randint(-2, 2)
                         self.scene["scrap"].append(prize)
+                    explosion_sound = arcade.load_sound("assets/explosion.wav")
+                    arcade.play_sound(explosion_sound, volume=0.3)
                     meteor.kill()
 
     def on_mouse_release(self, *args, **kwargs):
         self.laser_on = False
+        self.laser_sound = 0
 
     def meteor_kill(self):
         player_pos = self.player_body._get_position()
@@ -390,15 +438,10 @@ class TestGame(arcade.View):
             return
         if 0.6 <= drop_choice > 0.8:
             return random.choice(common)
-        # elif 0.8 <= drop_choice > 0.95:
-        #     choice = rare
-        #     return choice
-        # elif 0.95 <= drop_choice >= 1:
-        #     choice = legendary
-        #     return choice
 
     def bullet_kill(self):
 
+        enemy_explosion = arcade.load_sound("assets/explosion_enemy.wav")
         player_pos = self.player_body._get_position()
         for bullet in self.scene["bullets"]:
             collision = arcade.check_for_collision_with_list(
@@ -425,11 +468,11 @@ class TestGame(arcade.View):
                         ),
                     )
                     self.explosion.append(collision)
-
+                    arcade.play_sound(enemy_explosion, volume=0.5)
                     bullet.kill()
                     zombie.kill()
 
-    def enemy_kill(self):
+    def enemy(self):
         player_pos = self.player_body._get_position()
         for enemy in self.scene["zombie"]:
             if enemy.center_x >= (player_pos[0] + 4100) or enemy.center_x <= (
@@ -440,6 +483,10 @@ class TestGame(arcade.View):
                 player_pos[1] - 4200
             ):
                 enemy.kill()
+            collision = arcade.check_for_collision(enemy, self.player_sprite)
+
+            if collision:
+                self.player_health -= 5
 
     def pick_up(self):
 
