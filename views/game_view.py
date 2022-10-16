@@ -11,7 +11,6 @@ from game_play.explosion import Explosion
 from views.inventory import InventoryView
 
 
-
 class TestGame(arcade.View):
     def __init__(self):
         super().__init__()
@@ -184,13 +183,11 @@ class TestGame(arcade.View):
         if self.laser_on:
             self.fire_laser()
 
-
         self.scene.update_animation(1 / 60)
 
         if self.player_health <= 0:
             print("YOU LOST")
             self.window.show_view(self.window.death_view)
-
 
     def spawn_enemy(self):
         # retreives player position so it can spawn enemies
